@@ -161,6 +161,17 @@ El sistema opera **tres bibliotecas con audiencias y reglas de visibilidad disti
 
 **Regla explícita sobre `FallaCatalogo`:** al ser de origen fabricante (información de dominio público en esencia, disponible en manuales de servicio), sí es candidata natural a biblioteca pública, curada por Ventas.
 
+**Regla explícita sobre costos y cotizaciones — tres niveles de acceso, no dos.**
+El costo real por impresión (CPI) es información distinta de la metodología para calcularlo. La biblioteca pública puede enseñar el *cómo* sin regalar el *cuánto* de la operación de la compañía. Esto se modela como tres niveles de profundidad, cada uno requiriendo más del prospecto a cambio de más precisión:
+
+| Nivel | Qué recibe el prospecto | Qué entrega el prospecto | Dónde vive |
+|---|---|---|---|
+| **Público (metodología)** | Fórmula del CPI explicada, regla 1X/2X, diferencia brochure vs. campo, comparativas ilustrativas con cifras genéricas o de rango — **nunca el desglose real de costos de refacciones por pieza** | Nada — libre acceso | `ArticuloBiblioteca`, nivel_acceso = publico |
+| **Estimado rápido (embudo ligero)** | Un rango aproximado de renta/CPI mensual, calculado con una fórmula simplificada de referencia, explícitamente etiquetado como estimado no vinculante | Volumen mensual global aproximado + datos de contacto básicos | `SolicitudCotizacion`, tipo = estimado_rapido |
+| **Cotización real (embudo calificado)** | El CPI real, calculado con costos reales de refacciones, tóner y servicio para su volumen específico | Volumen global, volumen por área, volumen por MFP, o solicitud explícita de ser atendido por un asesor técnico | `SolicitudCotizacion`, tipo = cotizacion_detallada o asesor_tecnico |
+
+**Ningún artículo de biblioteca pública ni el cotizador de autoservicio del sitio expone montos reales de refacciones, tóner o servicio.** Esos valores solo existen en `SolucionCampo`/catálogo interno y en el resultado calculado de una `SolicitudCotizacion` calificada — nunca en contenido estático indexable.
+
 ---
 
 ## 6. Modelo de Dominio
@@ -301,7 +312,27 @@ Formaliza la autorización conjunta exigida por el contrato de Renta para operar
 | resultado | enum | autorizada, negada |
 | resumen_visible_cliente | text | Para transparencia — versión resumida mostrada al cliente |
 
-### 6.2 Equipos, lecturas y evidencia
+### 6.2 Catálogo de equipos y sugerencia de modelo
+
+**ModeloMFP** (formalizada — antes solo referenciada, no detallada)
+Además de los datos de ficha técnica, sostiene la regla de sugerencia automática de modelo para el estimado del Paso 1 del embudo, basada en rendimiento real de campo, no en el dato de brochure del fabricante.
+
+| Atributo | Tipo | Descripción |
+|---|---|---|
+| id | UUID PK | |
+| marca | string | |
+| modelo | string | |
+| tipo | enum | negro, color |
+| rendimiento_toner_fabricante | integer | Dato de brochure — se conserva solo como referencia comparativa educativa |
+| rendimiento_toner_campo | integer | Dato real medido en campo — base de todos los cálculos operativos |
+| volumen_optimo_1x | integer | = `rendimiento_toner_campo`. Volumen mensual de diseño |
+| volumen_maximo_2x | integer | = `rendimiento_toner_campo * 2`. Límite seguro; por encima, desgaste acelerado |
+| cpi_referencia_rango | JSONB | `{min, max}` — usado únicamente para el estimado rápido público, nunca desglosado por refacción |
+
+**Regla de sugerencia de modelo (Paso 1 del embudo):**
+Dado el `volumen_global_mensual` declarado por el prospecto, el sistema busca el `ModeloMFP` cuyo `volumen_optimo_1x` cubra ese volumen. Si el volumen cae entre `volumen_optimo_1x` y `volumen_maximo_2x` de un modelo, se sugiere ese modelo con nota de "límite seguro, evaluar equipo superior". Si excede `volumen_maximo_2x` de todos los modelos del catálogo, no se sugiere modelo automáticamente — se marca `requiere_evaluacion_personalizada = true` y se enruta directo a `asesor_tecnico`. Esta lógica vive en el catálogo, nunca como tabla fija en código o en el contenido del correo automático — así escala sin tocar la plantilla cada vez que se agrega un modelo nuevo.
+
+### 6.3 Equipos, lecturas y evidencia
 
 **Equipo (Asset)** — sin cambios respecto a lo ya definido: `asset_id` interno, `serial_number` único visible, historial completo aunque cambie de cliente, `propietario_legal` (EMPRESA en Renta y Escuela prepago, CLIENTE en Venta).
 
@@ -365,7 +396,7 @@ Registra el evento que justifica un contador menor al anterior.
 | tecnico_id | FK | |
 | fecha_fin_leyenda_obligatoria | date | Calculada: fecha + 3 meses. Toda factura/reporte emitido dentro de esta ventana debe incluir leyenda de justificación referenciando este registro |
 
-### 6.3 Servicio técnico, fallas y biblioteca
+### 6.4 Servicio técnico, fallas y biblioteca
 
 **OrdenServicio** (equivalente operativo de "Ticket" cara a contrato — mismo agregado, nombre alineado al lenguaje contractual)
 
@@ -428,7 +459,7 @@ Registra el evento que justifica un contador menor al anterior.
 | fecha_actualizacion | date | Visible en el artículo — señal de vigencia para SEO/LLM |
 | datos_estructurados_json_ld | JSONB (nullable) | FAQPage / HowTo, según tipo |
 
-### 6.4 Prospección y comunicación
+### 6.5 Prospección y comunicación
 
 **Prospecto** (nueva)
 
@@ -494,6 +525,46 @@ Bitácora de cada interacción — es lo que sostiene o reinicia el semáforo co
 | dias_habiles_amarillo | integer | Días sin actividad/acción vencida para pasar a amarillo |
 | dias_habiles_rojo | integer | Días sin actividad/acción vencida para pasar a rojo |
 
+**SolicitudCotizacion** (nueva)
+Formaliza el embudo escalonado: separa el "estimado rápido" del "cálculo real", y define qué datos habilitan cada uno. Los tres niveles corresponden a los tres pasos del embudo: estimado web (30 segundos) → llamada de asesor → propuesta formal post-visita.
+
+| Atributo | Tipo | Descripción |
+|---|---|---|
+| id | UUID PK | |
+| prospecto_id | FK → Prospecto | |
+| tipo_solicitud | enum | estimado_rapido, cotizacion_detallada, asesor_tecnico |
+| volumen_global_mensual | integer (nullable) | Único dato de volumen requerido para `estimado_rapido` |
+| ciudad_estado_detectada | string (nullable) | Capturada pasivamente por geolocalización de navegador/IP — nunca preguntada en el formulario |
+| modelo_sugerido_id | FK → ModeloMFP (nullable) | Calculado, no hardcodeado — ver regla de sugerencia en `ModeloMFP` |
+| cpi_estimado_rango | JSONB (nullable) | `{min, max}` — nunca un valor puntual, para no prometer una precisión que el dato de entrada no sostiene |
+| costo_mensual_estimado_rango | JSONB (nullable) | `{min, max}` |
+| volumen_por_area | JSONB (nullable) | `[{area, volumen_mensual}]` — recolectado por el asesor durante la llamada (paso 2), no en formulario público |
+| equipos | JSONB (nullable) | `[{modelo_id, volumen_mensual}]` — máxima precisión, habilita el CPI real completo |
+| confiabilidad_volumen_declarado | enum (nullable) | registrado_en_contador, estimado_aproximado, desconocido, calculo_proveedor_anterior — bandera para el asesor si no es `registrado_en_contador` |
+| prefiere_asesor | boolean | Si es true, se omite el cálculo automático y se enruta directo a Ventas vía `SeguimientoComercial` |
+| estado | enum | nueva, en_calculo, entregada |
+| cpi_calculado | decimal (nullable) | Valor puntual real — solo se puebla para `cotizacion_detallada` o `asesor_tecnico`, nunca para `estimado_rapido` |
+| fecha_solicitud | timestamp | |
+| fecha_entrega | timestamp (nullable) | |
+
+Toda `SolicitudCotizacion` con `tipo_solicitud != estimado_rapido` crea automáticamente un `SeguimientoComercial` (ver 6.5) con responsable asignado — así ninguna solicitud calificada queda solo como un registro pasivo en la base de datos.
+
+**PropuestaFormal** (nueva — Paso 3, post-visita)
+
+| Atributo | Tipo | Descripción |
+|---|---|---|
+| id | UUID PK | |
+| solicitud_cotizacion_id | FK → SolicitudCotizacion | Debe ser `tipo_solicitud = asesor_tecnico` con visita ya realizada |
+| cpi_real | decimal | Calculado con volumen validado en campo — valor puntual, ya no rango |
+| modelo_recomendado_id | FK → ModeloMFP | |
+| opcion_contrato | enum | renta, venta, escuela_prepago |
+| incluye | JSONB | Lista: equipo, tóner, refacciones, servicio, mantenimiento |
+| terminos_condiciones_s3_key | string | |
+| firma_digital | string (nullable) | |
+| estado | enum | borrador, enviada, firmada, rechazada |
+| fecha_visita | timestamp | |
+| fecha_entrega | timestamp | Debe caer dentro de 24–48 horas posteriores a `fecha_visita` |
+
 **Canal de mensajería unificado (Firestore):** un mismo mecanismo de conversación transporta, según contexto: chat de órdenes de servicio, confirmaciones de lectura, confirmaciones de recibido de `SeguimientoRenovacion`, y comunicación con `Prospecto`. Se modela por `entity_type` + `entity_id` (ticket, renovacion, prospecto) en vez de canales separados por función, para no duplicar infraestructura de mensajería.
 
 **Actividad** (nueva)
@@ -525,13 +596,13 @@ Estado calculado de seguimiento — mismo principio que `SemaforoGrupo`, pero mi
 | motivo | text | |
 | fecha_actualizacion | timestamp | |
 
-### 6.5 Facturación, pagos y semáforo
+### 6.6 Facturación, pagos y semáforo
 
 Sin cambios de fondo respecto a lo ya definido — **Factura**, **ReferenciaBancaria**, **Pago**, **SemaforoGrupo**, **HistorialSemaforo** — salvo la corrección ya señalada: cualquier `trigger_evento = OVERRIDE_SUPERVISOR` en `HistorialSemaforo` debe reflejar que la autorización es conjunta (Coordinadora + Supervisor), registrada formalmente en `AutorizacionExcepcionSemaforo`, no una decisión unilateral de Supervisor.
 
 **Nota explícita:** `SemaforoGrupo` **no se instancia ni se evalúa** para contratos `tipo_negocio = ESCUELA_PREPAGO`. El control de ese modelo es exclusivamente `SeguimientoConsumoAnual` + `SeguimientoRenovacion`.
 
-### 6.6 Inventario
+### 6.7 Inventario
 
 **Insumo, Almacén, Stock, MovimientoInventario** — sin cambios respecto a lo ya definido.
 
@@ -587,6 +658,8 @@ Esto resuelve directamente la pregunta P1 que había quedado abierta: una renova
 - `SOLUCION_CAMPO.REGISTRADA`, `SOLUCION_CAMPO.VALIDADA`
 - `SEGUIMIENTO_COMERCIAL.CREADO`, `SEGUIMIENTO_COMERCIAL.ACTIVIDAD_REGISTRADA`
 - `SEGUIMIENTO_COMERCIAL.AMARILLO`, `SEGUIMIENTO_COMERCIAL.ROJO`, `SEGUIMIENTO_COMERCIAL.ESCALADO`
+- `SOLICITUD_COTIZACION.CREADA`, `SOLICITUD_COTIZACION.CALCULADA`, `SOLICITUD_COTIZACION.ENTREGADA`
+- `MODELO.SUGERIDO_AUTOMATICAMENTE`, `PROPUESTA_FORMAL.ENVIADA`, `PROPUESTA_FORMAL.FIRMADA`
 
 ### 7.4 Job de monitoreo de consumo (generalizado a Venta y Escuela prepago)
 
@@ -803,6 +876,8 @@ Sin cambios respecto a lo ya definido: límites de tamaño (funciones ≤ 30 lí
 | **Excepción operativa en ROJO** | Autorización conjunta de Coordinadora y Supervisor para operar pese a bloqueo por morosidad; el técnico nunca puede autorizarla. |
 | **Semáforo comercial** | FSM independiente del financiero, aplicado a `SeguimientoComercial`; mide riesgo de omisión en el seguimiento de prospectos y renovaciones, no capacidad de pago. |
 | **SeguimientoComercial** | Registro de dueño, etapa y próxima acción programada para un prospecto o una renovación; su ausencia de actividad dispara alertas y escalamiento automático. |
+| **CPI (Costo por Impresión)** | Costo real que incluye amortización del equipo, tóner, refacciones y servicio técnico — distinto del rendimiento de brochure del fabricante. Su desglose real nunca es público; solo el resultado final, y solo tras calificar en el embudo. |
+| **Embudo escalonado de cotización** | Los tres niveles de `SolicitudCotizacion` (estimado rápido, cotización detallada, asesor técnico) que intercambian precisión del cálculo por profundidad de datos entregados por el prospecto. |
 
 ---
 
