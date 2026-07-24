@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calcula tu costo por impresión en 30 segundos</title>
+    <meta name="description" content="Olvida los brochures. Te damos un estimado real basado en tu volumen mensual. Calcula tu costo por impresión en 30 segundos." />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Calcula tu costo por impresión en 30 segundos" />
+    <meta property="og:description" content="Olvida los brochures. Te damos un estimado real basado en tu volumen mensual." />
+    <meta property="og:type" content="website" />
+    
+    <!-- JSON-LD para SEO / LLM -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Calculadora de Costo por Impresión",
+        "description": "Estima tu costo real de impresión basado en tu volumen mensual. Incluye equipo, tóner, refacciones y servicio.",
+        "applicationCategory": "BusinessApplication",
+        "browserRequirements": "Requiere JavaScript",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "MXN",
+            "availability": "https://schema.org/InStock"
+        }
+    }
+    </script>
+    
+    <style>
+        /* ── Reset y base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* ── Contenedor principal ── */
+        .container {
+            max-width: 640px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+            padding: 40px 36px;
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 28px 20px;
+            }
+        }
+        
+        /* ── Encabezado ── */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .header .badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 4px 14px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+        .header h1 span {
+            color: #4f46e5;
+        }
+        .header p {
+            font-size: 16px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            .header p {
+                font-size: 14px;
+            }
+        }
+        
+        /* ── Formulario ── */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+        .form-group label .required {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+        .form-group .hint {
+            display: block;
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            font-family: inherit;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            background: #ffffff;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+        .form-group input::placeholder {
+            color: #94a3b8;
+        }
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        
+        /* ── Checkbox de privacidad ── */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 24px 0 28px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            margin-top: 2px;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+        .checkbox-group label {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .checkbox-group label a {
+            color: #4f46e5;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .checkbox-group label a:hover {
+            color: #4338ca;
+        }
+        
+        /* ── Botón ── */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: inherit;
+            color: #ffffff;
+            background: #4f46e5;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-submit:hover {
+            background: #4338ca;
+        }
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* ── Resultado (inicialmente oculto) ── */
+        .result-container {
+            display: none;
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px solid #f1f5f9;
+            animation: fadeIn 0.4s ease;
+        }
+        .result-container.visible {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+        }
+        .result-card .label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .result-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 4px 0 2px;
+        }
+        .result-card .value span {
+            font-size: 18px;
+            font-weight: 500;
+            color: #64748b;
+        }
+        .result-card .sub {
+            font-size: 14px;
+            color: #64748b;
+        }
+        .result-card .highlight {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .result-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+        .result-item .label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .result-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+        .result-item .value .note {
+            font-size: 13px;
+            font-weight: 400;
+            color: #94a3b8;
+        }
+        
+        /* ── CTA de agendamiento ── */
+        .cta-agendar {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            color: #4f46e5;
+            background: #eef2ff;
+            border: 2px solid #4f46e5;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .cta-agendar:hover {
+            background: #4f46e5;
+            color: #ffffff;
+        }
+        
+        .cta-sub {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        .cta-sub a {
+            color: #4f46e5;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .cta-sub a:hover {
+            color: #4338ca;
+        }
+        
+        /* ── Mensaje de error ── */
+        .error-msg {
+            display: none;
+            background: #fef2f2;
+            color: #dc2626;
+            font-size: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border-left: 4px solid #dc2626;
+        }
+        .error-msg.visible {
+            display: block;
+        }
+        
+        /* ── Spinner ── */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    
+    <!-- ─── HEADER ─── -->
+    <div class="header">
+        <div class="badge">⚡ Estimado en 30 segundos</div>
+        <h1>Calcula tu <span>costo por impresión</span></h1>
+        <p>Olvida los brochures. Te damos un estimado real basado en tu volumen mensual.</p>
+    </div>
+    
+    <!-- ─── FORMULARIO ─── -->
+    <form id="estimadoForm" novalidate>
+        
+        <!-- Error general -->
+        <div class="error-msg" id="errorMsg">
+            Por favor, completa todos los campos obligatorios.
+        </div>
+        
+        <!-- 1. Nombre completo -->
+        <div class="form-group">
+            <label for="nombre">Nombre completo <span class="required">*</span></label>
+            <input type="text" id="nombre" placeholder="Ej: Ana Martínez" required />
+        </div>
+        
+        <!-- 2. Correo electrónico -->
+        <div class="form-group">
+            <label for="email">Correo electrónico <span class="required">*</span></label>
+            <input type="email" id="email" placeholder="ana@escuela.edu.mx" required />
+        </div>
+        
+        <!-- 3. Teléfono -->
+        <div class="form-group">
+            <label for="telefono">Teléfono <span class="required">*</span></label>
+            <input type="tel" id="telefono" placeholder="55 1234 5678" required />
+        </div>
+        
+        <!-- 4. Empresa / Escuela -->
+        <div class="form-group">
+            <label for="empresa">Empresa o Escuela <span class="required">*</span></label>
+            <input type="text" id="empresa" placeholder="Ej: Colegio Las Américas" required />
+        </div>
+        
+        <!-- 5. Volumen TOTAL mensual -->
+        <div class="form-group">
+            <label for="volumen">¿Cuántas impresiones TOTALES hacen al mes? <span class="required">*</span></label>
+            <input type="number" id="volumen" placeholder="Ej: 12000" min="1" required />
+            <span class="hint">Suma de todas las impresiones en blanco y negro + color de todos tus equipos.</span>
+        </div>
+        
+        <!-- 6. Tipo de interés -->
+        <div class="form-group">
+            <label for="tipoInteres">¿Qué buscas? <span class="required">*</span></label>
+            <select id="tipoInteres" required>
+                <option value="">Selecciona una opción</option>
+                <option value="renta">Renta de equipo</option>
+                <option value="venta">Compra de equipo</option>
+                <option value="escuela_prepago">Institución educativa — plan prepago anual</option>
+            </select>
+        </div>
+        
+        <!-- 7. Checkbox de privacidad -->
+        <div class="checkbox-group">
+            <input type="checkbox" id="privacidad" required />
+            <label for="privacidad">
+                Acepto el <a href="/aviso-privacidad" target="_blank">Aviso de Privacidad</a> y entiendo que esto es un <strong>estimado preliminar</strong>.
+            </label>
+        </div>
+        
+        <!-- Botón de envío -->
+        <button type="submit" class="btn-submit" id="btnSubmit">
+            Calcular mi estimado
+        </button>
+    </form>
+    
+    <!-- ─── RESULTADO ─── -->
+    <div class="result-container" id="resultContainer">
+        
+        <!-- Tarjeta principal -->
+        <div class="result-card">
+            <div class="label">Tu costo estimado por impresión</div>
+            <div class="value" id="cpiRango">$0.25 – $0.35 <span>MXN</span></div>
+            <div class="sub">Incluye <span class="highlight">equipo, tóner, refacciones, servicio y mantenimiento</span></div>
+        </div>
+        
+        <!-- Detalles en grid -->
+        <div class="result-grid">
+            <div class="result-item">
+                <div class="label">Costo mensual estimado</div>
+                <div class="value" id="costoMensual">$3,000 – $4,200</div>
+            </div>
+            <div class="result-item">
+                <div class="label">Modelo sugerido</div>
+                <div class="value" id="modeloSugerido">IM 430 <span class="note">· 10,000 imp/mes</span></div>
+            </div>
+        </div>
+        
+        <!-- Nota de referencia -->
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px; line-height: 1.5;">
+            ⚠️ Este es un <strong>estimado de referencia</strong>. Para una cotización formal con números reales, necesitamos validar tu volumen en campo.
+        </p>
+        
+        <!-- CTA: Agendar llamada -->
+        <a href="#" class="cta-agendar" id="ctaAgendar">
+            📞 Agendar llamada con asesor técnico
+        </a>
+        
+        <div class="cta-sub">
+            ¿Prefieres que te contactemos? <a href="#" id="contactarEmail">Responde a este correo</a>
+        </div>
+    </div>
+    
+</div>
+
+<script>
+    (function() {
+        'use strict';
+        
+        // ─── DOM references ───
+        const form = document.getElementById('estimadoForm');
+        const btn = document.getElementById('btnSubmit');
+        const errorMsg = document.getElementById('errorMsg');
+        const resultContainer = document.getElementById('resultContainer');
+        
+        const nombre = document.getElementById('nombre');
+        const email = document.getElementById('email');
+        const telefono = document.getElementById('telefono');
+        const empresa = document.getElementById('empresa');
+        const volumen = document.getElementById('volumen');
+        const tipoInteres = document.getElementById('tipoInteres');
+        const privacidad = document.getElementById('privacidad');
+        
+        const cpiRango = document.getElementById('cpiRango');
+        const costoMensual = document.getElementById('costoMensual');
+        const modeloSugerido = document.getElementById('modeloSugerido');
+        const ctaAgendar = document.getElementById('ctaAgendar');
+        const contactarEmail = document.getElementById('contactarEmail');
+        
+        // ─── Catálogo de modelos (simulado) ───
+        // En producción, esto vendría del backend vía API.
+        // Basado en ModeloMFP del documento maestro.
+        const catalogoModelos = [
+            {
+                id: 'mod-001',
+                marca: 'Ricoh',
+                modelo: 'IM 430',
+                tipo: 'negro',
+                rendimiento_toner_campo: 10000,   // 1X
+                volumen_optimo_1x: 10000,
+                volumen_maximo_2x: 20000,
+                cpi_referencia_rango: { min: 0.25, max: 0.35 }
+            },
+            {
+                id: 'mod-002',
+                marca: 'Ricoh',
+                modelo: 'IM 550',
+                tipo: 'negro',
+                rendimiento_toner_campo: 18000,
+                volumen_optimo_1x: 18000,
+                volumen_maximo_2x: 36000,
+                cpi_referencia_rango: { min: 0.22, max: 0.30 }
+            },
+            {
+                id: 'mod-003',
+                marca: 'Ricoh',
+                modelo: 'IMC 300',
+                tipo: 'color',
+                rendimiento_toner_campo: 12000,
+                volumen_optimo_1x: 12000,
+                volumen_maximo_2x: 24000,
+                cpi_referencia_rango: { min: 0.40, max: 0.55 }
+            },
+            {
+                id: 'mod-004',
+                marca: 'Ricoh',
+                modelo: 'IMC 600',
+                tipo: 'color',
+                rendimiento_toner_campo: 25000,
+                volumen_optimo_1x: 25000,
+                volumen_maximo_2x: 50000,
+                cpi_referencia_rango: { min: 0.35, max: 0.48 }
+            }
+        ];
+        
+        // ─── Lógica de sugerencia de modelo ───
+        // Regla del documento maestro:
+        // - Buscar modelo cuyo volumen_optimo_1x cubra el volumen declarado.
+        // - Si volumen está entre 1X y 2X → sugerir con nota "límite seguro".
+        // - Si excede 2X de todos → requiere_evaluacion_personalizada = true.
+        function sugerirModelo(volumenDeclarado) {
+            // Ordenar de menor a mayor volumen_optimo_1x
+            const sorted = [...catalogoModelos].sort((a, b) => a.volumen_optimo_1x - b.volumen_optimo_1x);
+            
+            let mejorMatch = null;
+            let nota = '';
+            let requierePersonalizada = false;
+            
+            for (const modelo of sorted) {
+                if (volumenDeclarado <= modelo.volumen_optimo_1x) {
+                    mejorMatch = modelo;
+                    nota = `· ${modelo.volumen_optimo_1x.toLocaleString()} imp/mes (1X)`;
+                    break;
+                }
+                if (volumenDeclarado <= modelo.volumen_maximo_2x) {
+                    mejorMatch = modelo;
+                    nota = `· ${modelo.volumen_optimo_1x.toLocaleString()} imp/mes (1X) — límite seguro, evaluar equipo superior`;
+                    break;
+                }
+            }
+            
+            // Si ningún modelo cubre el volumen (excede 2X de todos)
+            if (!mejorMatch) {
+                requierePersonalizada = true;
+                // Tomar el modelo de mayor capacidad como referencia
+                const ultimo = sorted[sorted.length - 1];
+                return {
+                    modelo: ultimo,
+                    nota: `⚠️ Tu volumen (${volumenDeclarado.toLocaleString()}) excede el límite seguro de ${ultimo.modelo} (${ultimo.volumen_maximo_2x.toLocaleString()}). Requiere evaluación personalizada.`,
+                    requierePersonalizada: true
+                };
+            }
+            
+            return {
+                modelo: mejorMatch,
+                nota: nota,
+                requierePersonalizada: false
+            };
+        }
+        
+        // ─── Formateo de números ───
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        
+        function formatNumber(value) {
+            return value.toLocaleString('es-MX');
+        }
+        
+        // ─── Envío del formulario ───
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validación básica
+            const errors = [];
+            if (!nombre.value.trim()) errors.push('Nombre');
+            if (!email.value.trim() || !email.value.includes('@')) errors.push('Correo');
+            if (!telefono.value.trim()) errors.push('Teléfono');
+            if (!empresa.value.trim()) errors.push('Empresa');
+            if (!volumen.value || parseInt(volumen.value) < 1) errors.push('Volumen');
+            if (!tipoInteres.value) errors.push('Tipo de interés');
+            if (!privacidad.checked) errors.push('Aceptar el Aviso de Privacidad');
+            
+            if (errors.length > 0) {
+                errorMsg.textContent = 'Por favor, completa: ' + errors.join(', ');
+                errorMsg.classList.add('visible');
+                // Scroll al error
+                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            errorMsg.classList.remove('visible');
+            
+            // ── Simular cálculo ──
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Calculando...';
+            
+            // Simular latencia de red (para UX)
+            setTimeout(function() {
+                const vol = parseInt(volumen.value);
+                const resultado = sugerirModelo(vol);
+                const modelo = resultado.modelo;
+                const cpi = modelo.cpi_referencia_rango;
+                const costoMin = vol * cpi.min;
+                const costoMax = vol * cpi.max;
+                
+                // Actualizar resultados
+                cpiRango.innerHTML = `${formatCurrency(cpi.min)} – ${formatCurrency(cpi.max)} <span>MXN</span>`;
+                costoMensual.textContent = `${formatCurrency(costoMin)} – ${formatCurrency(costoMax)}`;
+                
+                let modeloText = `${modelo.marca} ${modelo.modelo}`;
+                if (resultado.requierePersonalizada) {
+                    modeloText = '⚠️ ' + modeloText + ' — ' + resultado.nota;
+                } else {
+                    modeloText = modeloText + ' ' + resultado.nota;
+                }
+                modeloSugerido.innerHTML = modeloText;
+                
+                // Mostrar resultado
+                resultContainer.classList.add('visible');
+                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Restaurar botón
+                btn.disabled = false;
+                btn.innerHTML = 'Calcular mi estimado';
+                
+                // ── Enviar datos al backend (simulado) ──
+                // En producción, aquí se crea Prospecto + SolicitudCotizacion
+                console.log('📦 Datos del estimado:', {
+                    nombre: nombre.value.trim(),
+                    email: email.value.trim(),
+                    telefono: telefono.value.trim(),
+                    empresa: empresa.value.trim(),
+                    volumen: vol,
+                    tipoInteres: tipoInteres.value,
+                    modelo_sugerido_id: modelo.id,
+                    cpi_estimado_rango: cpi,
+                    costo_mensual_estimado_rango: { min: costoMin, max: costoMax }
+                });
+                
+                // Configurar CTA de agendamiento con datos del prospecto
+                const params = new URLSearchParams({
+                    nombre: nombre.value.trim(),
+                    email: email.value.trim(),
+                    telefono: telefono.value.trim(),
+                    empresa: empresa.value.trim(),
+                    volumen: vol,
+                    tipo: tipoInteres.value,
+                    modelo: modelo.modelo
+                });
+                ctaAgendar.href = '/agendar-llamada?' + params.toString();
+                contactarEmail.href = 'mailto:ventas@solucionesimpresion.mx?subject=Estimado%20de%20impresión%20para%20' + encodeURIComponent(empresa.value.trim()) + '&body=Hola,%20recibí%20el%20estimado%20y%20quiero%20profundizar.';
+                
+            }, 800); // Simulación de 800ms
+        });
+        
+        // ─── Validación en tiempo real: ocultar error al escribir ───
+        document.querySelectorAll('#estimadoForm input, #estimadoForm select').forEach(function(el) {
+            el.addEventListener('input', function() {
+                errorMsg.classList.remove('visible');
+            });
+        });
+        
+    })();
+</script>
+
+</body>
+</html>
