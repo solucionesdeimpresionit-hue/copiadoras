@@ -1,707 +1,619 @@
 <!DOCTYPE html>
-<html lang="es-MX">
+<html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calcula tu costo por impresión en 30 segundos</title>
-    <meta name="description" content="Olvida los brochures. Te damos un estimado real basado en tu volumen mensual. Calcula tu costo por impresión en 30 segundos." />
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="Calcula tu costo por impresión en 30 segundos" />
-    <meta property="og:description" content="Olvida los brochures. Te damos un estimado real basado en tu volumen mensual." />
-    <meta property="og:type" content="website" />
-    
-    <!-- JSON-LD para SEO / LLM -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Calculadora de Costo por Impresión",
-        "description": "Estima tu costo real de impresión basado en tu volumen mensual. Incluye equipo, tóner, refacciones y servicio.",
-        "applicationCategory": "BusinessApplication",
-        "browserRequirements": "Requiere JavaScript",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "MXN",
-            "availability": "https://schema.org/InStock"
-        }
-    }
-    </script>
-    
-    <style>
-        /* ── Reset y base ── */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f8fafc;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        /* ── Contenedor principal ── */
-        .container {
-            max-width: 640px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
-            padding: 40px 36px;
-            transition: all 0.3s ease;
-        }
-        @media (max-width: 480px) {
-            .container {
-                padding: 28px 20px;
-            }
-        }
-        
-        /* ── Encabezado ── */
-        .header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        .header .badge {
-            display: inline-block;
-            background: #eef2ff;
-            color: #4f46e5;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            padding: 4px 14px;
-            border-radius: 100px;
-            margin-bottom: 12px;
-        }
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #0f172a;
-            line-height: 1.2;
-            margin-bottom: 8px;
-        }
-        .header h1 span {
-            color: #4f46e5;
-        }
-        .header p {
-            font-size: 16px;
-            color: #64748b;
-            line-height: 1.5;
-        }
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 22px;
-            }
-            .header p {
-                font-size: 14px;
-            }
-        }
-        
-        /* ── Formulario ── */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 6px;
-        }
-        .form-group label .required {
-            color: #ef4444;
-            margin-left: 2px;
-        }
-        .form-group .hint {
-            display: block;
-            font-size: 13px;
-            color: #94a3b8;
-            font-weight: 400;
-            margin-top: 4px;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 16px;
-            font-family: inherit;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            background: #ffffff;
-            color: #0f172a;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-        .form-group input::placeholder {
-            color: #94a3b8;
-        }
-        .form-group select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            padding-right: 40px;
-        }
-        
-        /* ── Checkbox de privacidad ── */
-        .checkbox-group {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin: 24px 0 28px;
-        }
-        .checkbox-group input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            min-width: 20px;
-            margin-top: 2px;
-            accent-color: #4f46e5;
-            cursor: pointer;
-        }
-        .checkbox-group label {
-            font-size: 14px;
-            color: #475569;
-            line-height: 1.5;
-            cursor: pointer;
-        }
-        .checkbox-group label a {
-            color: #4f46e5;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-        }
-        .checkbox-group label a:hover {
-            color: #4338ca;
-        }
-        
-        /* ── Botón ── */
-        .btn-submit {
-            width: 100%;
-            padding: 16px;
-            font-size: 17px;
-            font-weight: 600;
-            font-family: inherit;
-            color: #ffffff;
-            background: #4f46e5;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-        .btn-submit:hover {
-            background: #4338ca;
-        }
-        .btn-submit:active {
-            transform: scale(0.98);
-        }
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        /* ── Resultado (inicialmente oculto) ── */
-        .result-container {
-            display: none;
-            margin-top: 32px;
-            padding-top: 32px;
-            border-top: 2px solid #f1f5f9;
-            animation: fadeIn 0.4s ease;
-        }
-        .result-container.visible {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .result-card {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 24px 28px;
-            margin-bottom: 24px;
-        }
-        .result-card .label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .result-card .value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #0f172a;
-            margin: 4px 0 2px;
-        }
-        .result-card .value span {
-            font-size: 18px;
-            font-weight: 500;
-            color: #64748b;
-        }
-        .result-card .sub {
-            font-size: 14px;
-            color: #64748b;
-        }
-        .result-card .highlight {
-            color: #4f46e5;
-            font-weight: 600;
-        }
-        
-        .result-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        @media (max-width: 480px) {
-            .result-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .result-item {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 16px 20px;
-        }
-        .result-item .label {
-            font-size: 12px;
-            font-weight: 500;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .result-item .value {
-            font-size: 18px;
-            font-weight: 600;
-            color: #0f172a;
-            margin-top: 2px;
-        }
-        .result-item .value .note {
-            font-size: 13px;
-            font-weight: 400;
-            color: #94a3b8;
-        }
-        
-        /* ── CTA de agendamiento ── */
-        .cta-agendar {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            font-family: inherit;
-            color: #4f46e5;
-            background: #eef2ff;
-            border: 2px solid #4f46e5;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            transition: background 0.2s, color 0.2s;
-        }
-        .cta-agendar:hover {
-            background: #4f46e5;
-            color: #ffffff;
-        }
-        
-        .cta-sub {
-            text-align: center;
-            margin-top: 16px;
-            font-size: 14px;
-            color: #94a3b8;
-        }
-        .cta-sub a {
-            color: #4f46e5;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-        }
-        .cta-sub a:hover {
-            color: #4338ca;
-        }
-        
-        /* ── Mensaje de error ── */
-        .error-msg {
-            display: none;
-            background: #fef2f2;
-            color: #dc2626;
-            font-size: 14px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 16px;
-            border-left: 4px solid #dc2626;
-        }
-        .error-msg.visible {
-            display: block;
-        }
-        
-        /* ── Spinner ── */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: #ffffff;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MFP Rental — Equipos de impresión para escuelas</title>
+<style>
+  :root{
+    --ink:#14171C;
+    --navy:#1B2430;
+    --navy-2:#232E3D;
+    --paper:#EDEEEA;
+    --paper-warm:#F7F6F2;
+    --cyan:#0F7A88;
+    --cyan-light:#3FB6C4;
+    --amber:#C97A2E;
+    --amber-light:#E0A968;
+    --line:#D8D5CC;
+    --line-dark:#39465A;
+    --font-head: -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+  ::selection{background:var(--amber-light);color:var(--ink);}
+
+  /* NAV */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(27,36,48,0.96);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line-dark);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--paper-warm);font-weight:800;letter-spacing:0.02em;font-size:16px;text-decoration:none;}
+  .brand .dial{width:22px;height:22px;border-radius:50%;border:2px solid var(--cyan-light);position:relative;flex:none;}
+  .brand .dial::after{content:"";position:absolute;top:1px;left:9px;width:2px;height:8px;background:var(--cyan-light);transform-origin:1px 10px;animation:spin 6s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .navlinks{display:flex;gap:28px;font-size:14px;color:#B7C0CC;}
+  .navlinks a{text-decoration:none;padding:6px 0;border-bottom:2px solid transparent;transition:.15s;}
+  .navlinks a:hover{color:var(--paper-warm);border-color:var(--cyan-light);}
+  .nav-cta{background:var(--amber);color:var(--ink);font-weight:700;padding:9px 18px;border-radius:3px;font-size:13.5px;text-decoration:none;letter-spacing:.02em;}
+  .nav-cta:hover{background:var(--amber-light);}
+  @media (max-width:760px){.navlinks{display:none;}}
+
+  /* HERO */
+  header.hero{
+    background:linear-gradient(180deg,var(--navy) 0%, var(--navy-2) 100%);
+    color:var(--paper-warm);
+    padding:88px 0 96px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--line-dark);
+  }
+  header.hero .wrap{display:grid;grid-template-columns:1.15fr 0.85fr;gap:56px;align-items:center;position:relative;z-index:2;}
+  @media (max-width:860px){header.hero .wrap{grid-template-columns:1fr;}}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--cyan-light);margin-bottom:18px;display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:"";width:16px;height:1px;background:var(--cyan-light);}
+  h1{
+    font-family:var(--font-head);
+    font-size:clamp(34px,5vw,52px);
+    font-weight:800;
+    line-height:1.06;
+    letter-spacing:-0.01em;
+    margin:0 0 22px;
+  }
+  h1 em{font-style:normal;color:var(--cyan-light);}
+  .hero p.lead{font-size:17px;color:#C7CFD9;max-width:46ch;margin:0 0 32px;}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn-primary{background:var(--amber);color:var(--ink);font-weight:700;padding:14px 24px;border-radius:3px;text-decoration:none;font-size:14.5px;letter-spacing:.01em;border:none;cursor:pointer;}
+  .btn-primary:hover{background:var(--amber-light);}
+  .btn-secondary{background:transparent;color:var(--paper-warm);font-weight:600;padding:14px 22px;border-radius:3px;text-decoration:none;font-size:14.5px;border:1px solid var(--line-dark);}
+  .btn-secondary:hover{border-color:var(--cyan-light);color:var(--cyan-light);}
+
+  /* dial readout */
+  .meter-panel{
+    background:var(--ink);
+    border:1px solid var(--line-dark);
+    border-radius:6px;
+    padding:26px 26px 22px;
+  }
+  .meter-panel .label{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#7C8797;margin-bottom:14px;}
+  .meter-row{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0;border-bottom:1px solid #262F3B;}
+  .meter-row:last-child{border-bottom:none;}
+  .meter-row .k{font-size:13px;color:#9AA5B3;}
+  .meter-digits{font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--cyan-light);letter-spacing:.02em;font-variant-numeric:tabular-nums;}
+  .meter-digits.amber{color:var(--amber-light);}
+
+  /* SECTION generic */
+  section{padding:76px 0;}
+  .section-head{max-width:640px;margin-bottom:44px;}
+  .section-head .eyebrow{color:var(--cyan);}
+  .section-head .eyebrow::before{background:var(--cyan);}
+  h2{font-family:var(--font-head);font-size:clamp(26px,3.4vw,34px);font-weight:800;letter-spacing:-0.01em;margin:0 0 12px;color:var(--ink);}
+  .section-head p{color:#4B5563;font-size:15.5px;max-width:56ch;}
+
+  /* MODELOS */
+  .models{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media (max-width:760px){.models{grid-template-columns:1fr;}}
+  .model-card{background:var(--paper-warm);border:1px solid var(--line);border-radius:6px;padding:30px;}
+  .model-card .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:3px;display:inline-block;margin-bottom:16px;}
+  .model-card.renta .tag{background:rgba(15,122,136,0.12);color:var(--cyan);}
+  .model-card.venta .tag{background:rgba(201,122,46,0.14);color:var(--amber);}
+  .model-card h3{font-family:var(--font-head);font-size:21px;margin:0 0 10px;}
+  .model-card ul{margin:18px 0 0;padding:0;list-style:none;}
+  .model-card li{font-size:14px;color:#374151;padding:8px 0 8px 20px;position:relative;border-top:1px dashed var(--line);}
+  .model-card li:first-child{border-top:none;}
+  .model-card li::before{content:"—";position:absolute;left:0;color:var(--line-dark);opacity:.5;}
+
+  /* COMO SE FACTURA strip */
+  .facturacion{background:var(--navy);color:var(--paper-warm);}
+  .facturacion .section-head p{color:#B7C0CC;}
+  .facturacion .section-head .eyebrow{color:var(--cyan-light);}
+  .facturacion .section-head .eyebrow::before{background:var(--cyan-light);}
+  .fact-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line-dark);border:1px solid var(--line-dark);border-radius:6px;overflow:hidden;}
+  @media (max-width:860px){.fact-steps{grid-template-columns:1fr 1fr;}}
+  .fact-step{background:var(--navy-2);padding:24px 20px;}
+  .fact-step .n{font-family:var(--font-mono);font-size:12px;color:var(--cyan-light);margin-bottom:10px;}
+  .fact-step h4{font-size:14.5px;margin:0 0 8px;font-weight:700;}
+  .fact-step p{font-size:13px;color:#9AA5B3;margin:0;}
+
+  /* BIBLIOTECA */
+  .biblioteca-shell{background:var(--paper-warm);border:1px solid var(--line);border-radius:8px;padding:28px;}
+  .search-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+  #searchBox{flex:1;min-width:220px;padding:12px 14px;border:1px solid var(--line);border-radius:4px;font-size:14px;font-family:var(--font-body);background:#fff;}
+  #searchBox:focus{outline:2px solid var(--cyan-light);outline-offset:1px;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+  .chip{font-family:var(--font-mono);font-size:12px;padding:7px 13px;border-radius:20px;border:1px solid var(--line);background:#fff;cursor:pointer;color:#4B5563;letter-spacing:.02em;}
+  .chip.active{background:var(--ink);color:var(--paper-warm);border-color:var(--ink);}
+  .faq-list{display:flex;flex-direction:column;gap:10px;}
+  .faq-item{border:1px solid var(--line);border-radius:5px;background:#fff;overflow:hidden;}
+  .faq-q{padding:15px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:600;font-size:14.5px;gap:16px;}
+  .faq-q .cat{font-family:var(--font-mono);font-size:10.5px;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;flex:none;}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;font-size:13.8px;color:#4B5563;}
+  .faq-a p{padding:0 18px 16px;margin:0;}
+  .faq-item.open .faq-a{max-height:240px;}
+  .faq-item.open .faq-q{border-bottom:1px solid var(--line);}
+  .faq-toggle{font-family:var(--font-mono);color:var(--line-dark);}
+  .no-results{padding:30px;text-align:center;color:#9AA5B3;font-size:14px;display:none;}
+
+  /* FUNNEL */
+  .funnel-shell{background:var(--ink);border-radius:8px;padding:0;overflow:hidden;color:var(--paper-warm);border:1px solid var(--line-dark);}
+  .funnel-top{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid #262F3B;}
+  .dial-progress{display:flex;gap:8px;}
+  .dial-dot{width:9px;height:9px;border-radius:50%;background:#33404F;transition:.2s;}
+  .dial-dot.done{background:var(--cyan-light);}
+  .dial-dot.current{background:var(--amber-light);}
+  .funnel-step-label{font-family:var(--font-mono);font-size:11px;color:#7C8797;letter-spacing:.1em;text-transform:uppercase;}
+  .funnel-body{padding:34px 28px 30px;}
+  .funnel-body h3{font-family:var(--font-head);font-size:21px;margin:0 0 6px;}
+  .funnel-body .sub{font-size:13.5px;color:#9AA5B3;margin:0 0 26px;}
+  .option-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
+  @media (max-width:640px){.option-grid{grid-template-columns:1fr;}}
+  .option-card{background:var(--navy-2);border:1px solid var(--line-dark);border-radius:5px;padding:18px;cursor:pointer;text-align:left;color:var(--paper-warm);font-family:inherit;}
+  .option-card:hover{border-color:var(--cyan-light);}
+  .option-card.selected{border-color:var(--amber);background:rgba(201,122,46,0.12);}
+  .option-card .t{font-weight:700;font-size:14.5px;margin-bottom:4px;}
+  .option-card .d{font-size:12.5px;color:#9AA5B3;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  @media (max-width:640px){.field-row{grid-template-columns:1fr;}}
+  .field label{display:block;font-size:12px;color:#9AA5B3;margin-bottom:6px;font-family:var(--font-mono);letter-spacing:.03em;}
+  .field input, .field select{
+    width:100%;padding:11px 13px;background:var(--navy-2);border:1px solid var(--line-dark);
+    border-radius:4px;color:var(--paper-warm);font-size:14px;font-family:var(--font-body);
+  }
+  .field input:focus, .field select:focus{outline:none;border-color:var(--cyan-light);}
+  .funnel-nav{display:flex;justify-content:space-between;align-items:center;margin-top:26px;}
+  .btn-ghost{background:transparent;border:1px solid var(--line-dark);color:#B7C0CC;padding:12px 18px;border-radius:4px;cursor:pointer;font-size:13.5px;font-family:inherit;}
+  .btn-ghost:disabled{opacity:.3;cursor:not-allowed;}
+  .btn-next{background:var(--cyan);color:#fff;border:none;padding:12px 22px;border-radius:4px;cursor:pointer;font-weight:700;font-size:13.5px;font-family:inherit;}
+  .btn-next:hover{background:var(--cyan-light);}
+  .quote-box{background:var(--navy-2);border:1px solid var(--line-dark);border-radius:6px;padding:22px;margin-top:6px;}
+  .quote-box .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #33404F;font-size:13.5px;color:#B7C0CC;}
+  .quote-box .row:last-child{border-bottom:none;}
+  .quote-total{font-family:var(--font-mono);font-size:28px;color:var(--amber-light);font-variant-numeric:tabular-nums;}
+  .quote-note{font-size:11.5px;color:#7C8797;margin-top:14px;line-height:1.5;}
+  .fp-error{font-size:12.5px;color:#E38686;margin-top:6px;display:none;}
+  .privacy-row{display:flex;align-items:flex-start;gap:10px;margin-top:18px;font-size:12.5px;color:#9AA5B3;line-height:1.5;cursor:pointer;}
+  .privacy-row input{margin-top:3px;flex:none;width:16px;height:16px;accent-color:var(--cyan);}
+  .geo-note{font-family:var(--font-mono);font-size:11px;color:#5C687A;letter-spacing:.02em;}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;}
+  .cta-row .btn-ghost{background:transparent;}
+  .thanks-box{margin-top:20px;background:rgba(63,182,196,0.1);border:1px solid var(--cyan);border-radius:5px;padding:16px 18px;font-size:13.5px;color:var(--paper-warm);}
+  .thanks-box strong{color:var(--cyan-light);}
+
+  /* FOOTER */
+  footer{background:var(--navy);color:#8994A3;padding:40px 0;border-top:1px solid var(--line-dark);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:13px;}
+  footer .brand{color:#B7C0CC;}
+
+  .step-hidden{display:none;}
+</style>
 </head>
 <body>
 
-<div class="container" id="app">
-    
-    <!-- ─── HEADER ─── -->
-    <div class="header">
-        <div class="badge">⚡ Estimado en 30 segundos</div>
-        <h1>Calcula tu <span>costo por impresión</span></h1>
-        <p>Olvida los brochures. Te damos un estimado real basado en tu volumen mensual.</p>
+<nav>
+  <div class="wrap">
+    <a href="#" class="brand"><span class="dial"></span> MFP RENTAL</div>
+    <div class="navlinks">
+      <a href="#modelos">Modelos</a>
+      <a href="#facturacion">Cómo se factura</a>
+      <a href="#biblioteca">Biblioteca</a>
+      <a href="#cotizar">Cotizar</a>
     </div>
-    
-    <!-- ─── FORMULARIO ─── -->
-    <form id="estimadoForm" novalidate>
-        
-        <!-- Error general -->
-        <div class="error-msg" id="errorMsg">
-            Por favor, completa todos los campos obligatorios.
-        </div>
-        
-        <!-- 1. Nombre completo -->
-        <div class="form-group">
-            <label for="nombre">Nombre completo <span class="required">*</span></label>
-            <input type="text" id="nombre" placeholder="Ej: Ana Martínez" required />
-        </div>
-        
-        <!-- 2. Correo electrónico -->
-        <div class="form-group">
-            <label for="email">Correo electrónico <span class="required">*</span></label>
-            <input type="email" id="email" placeholder="ana@escuela.edu.mx" required />
-        </div>
-        
-        <!-- 3. Teléfono -->
-        <div class="form-group">
-            <label for="telefono">Teléfono <span class="required">*</span></label>
-            <input type="tel" id="telefono" placeholder="55 1234 5678" required />
-        </div>
-        
-        <!-- 4. Empresa / Escuela -->
-        <div class="form-group">
-            <label for="empresa">Empresa o Escuela <span class="required">*</span></label>
-            <input type="text" id="empresa" placeholder="Ej: Colegio Las Américas" required />
-        </div>
-        
-        <!-- 5. Volumen TOTAL mensual -->
-        <div class="form-group">
-            <label for="volumen">¿Cuántas impresiones TOTALES hacen al mes? <span class="required">*</span></label>
-            <input type="number" id="volumen" placeholder="Ej: 12000" min="1" required />
-            <span class="hint">Suma de todas las impresiones en blanco y negro + color de todos tus equipos.</span>
-        </div>
-        
-        <!-- 6. Tipo de interés -->
-        <div class="form-group">
-            <label for="tipoInteres">¿Qué buscas? <span class="required">*</span></label>
-            <select id="tipoInteres" required>
-                <option value="">Selecciona una opción</option>
-                <option value="renta">Renta de equipo</option>
-                <option value="venta">Compra de equipo</option>
-                <option value="escuela_prepago">Institución educativa — plan prepago anual</option>
-            </select>
-        </div>
-        
-        <!-- 7. Checkbox de privacidad -->
-        <div class="checkbox-group">
-            <input type="checkbox" id="privacidad" required />
-            <label for="privacidad">
-                Acepto el <a href="/aviso-privacidad" target="_blank">Aviso de Privacidad</a> y entiendo que esto es un <strong>estimado preliminar</strong>.
-            </label>
-        </div>
-        
-        <!-- Botón de envío -->
-        <button type="submit" class="btn-submit" id="btnSubmit">
-            Calcular mi estimado
-        </button>
-    </form>
-    
-    <!-- ─── RESULTADO ─── -->
-    <div class="result-container" id="resultContainer">
-        
-        <!-- Tarjeta principal -->
-        <div class="result-card">
-            <div class="label">Tu costo estimado por impresión</div>
-            <div class="value" id="cpiRango">$0.25 – $0.35 <span>MXN</span></div>
-            <div class="sub">Incluye <span class="highlight">equipo, tóner, refacciones, servicio y mantenimiento</span></div>
-        </div>
-        
-        <!-- Detalles en grid -->
-        <div class="result-grid">
-            <div class="result-item">
-                <div class="label">Costo mensual estimado</div>
-                <div class="value" id="costoMensual">$3,000 – $4,200</div>
-            </div>
-            <div class="result-item">
-                <div class="label">Modelo sugerido</div>
-                <div class="value" id="modeloSugerido">IM 430 <span class="note">· 10,000 imp/mes</span></div>
-            </div>
-        </div>
-        
-        <!-- Nota de referencia -->
-        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px; line-height: 1.5;">
-            ⚠️ Este es un <strong>estimado de referencia</strong>. Para una cotización formal con números reales, necesitamos validar tu volumen en campo.
-        </p>
-        
-        <!-- CTA: Agendar llamada -->
-        <a href="#" class="cta-agendar" id="ctaAgendar">
-            📞 Agendar llamada con asesor técnico
-        </a>
-        
-        <div class="cta-sub">
-            ¿Prefieres que te contactemos? <a href="#" id="contactarEmail">Responde a este correo</a>
-        </div>
+    <a href="#cotizar" class="nav-cta">Cotiza tu escuela</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Renta y venta de MFP para escuelas — CDMX y zona metropolitana</div>
+      <h1>El contador <em>nunca miente</em>.<br>Tu factura tampoco debería.</h1>
+      <p class="lead">Equipos multifuncionales de impresión para planteles de educación básica, con lecturas mensuales verificadas, garantía transparente y soporte técnico que responde antes de que levantes un ticket.</p>
+      <div class="hero-actions">
+        <a href="#cotizar" class="btn-primary">Cotiza tu escuela →</a>
+        <a href="#biblioteca" class="btn-secondary">Ver biblioteca de autoservicio</a>
+      </div>
     </div>
-    
-</div>
+    <div class="meter-panel">
+      <div class="label">Lectura de referencia — este mes</div>
+      <div class="meter-row"><span class="k">Contador inicial</span><span class="meter-digits" id="mIni">184,230</span></div>
+      <div class="meter-row"><span class="k">Contador actual</span><span class="meter-digits" id="mAct">191,845</span></div>
+      <div class="meter-row"><span class="k">Volumen del mes</span><span class="meter-digits amber" id="mVol">7,615</span></div>
+    </div>
+  </div>
+</header>
+
+<section id="modelos">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Dos formas de trabajar</div>
+      <h2>Renta o compra, tú decides</h2>
+      <p>Ambos modelos cubren mantenimiento, tóner y refacciones. La diferencia está en la propiedad del equipo y en cómo se cubre el volumen de impresión.</p>
+    </div>
+    <div class="models">
+      <div class="model-card renta">
+        <span class="tag">Renta mensual</span>
+        <h3>Servicio continuo, sin inversión inicial</h3>
+        <ul>
+          <li>Mínimo mensual de 5,000 o 10,000 impresiones por equipo.</li>
+          <li>El excedente se cobra por impresión, con tarifa fija o escalonada.</li>
+          <li>Sin plazo forzoso — cancelas con un mes de anticipación.</li>
+          <li>Lectura mensual confirmada por ti; si no respondes en 5 días hábiles se acepta automáticamente.</li>
+        </ul>
+      </div>
+      <div class="model-card venta">
+        <span class="tag">Compra con garantía</span>
+        <h3>El equipo es tuyo, con respaldo incluido</h3>
+        <ul>
+          <li>Pago único (PUE) y propiedad del equipo desde la entrega.</li>
+          <li>Garantía con bolsa de impresiones mensual (no acumulable).</li>
+          <li>Avisos automáticos al 80%, 90% y 100% del consumo de garantía.</li>
+          <li>Impresiones no usadas se convierten en saldo bonificable para tu renovación.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="facturacion" class="facturacion">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Transparencia por diseño</div>
+      <h2>Así se calcula tu factura</h2>
+      <p>Cuatro pasos, siempre en el mismo orden, siempre verificables desde tu panel.</p>
+    </div>
+    <div class="fact-steps">
+      <div class="fact-step">
+        <div class="n">01</div>
+        <h4>Visita técnica</h4>
+        <p>En los primeros 10 días del mes, el técnico da mantenimiento y toma la lectura del contador frente al usuario asignado.</p>
+      </div>
+      <div class="fact-step">
+        <div class="n">02</div>
+        <h4>Confirmación</h4>
+        <p>Recibes la lectura en tu app para confirmarla. Si hay un consumo mayor a 2x tu promedio, primero se concilia contigo.</p>
+      </div>
+      <div class="fact-step">
+        <div class="n">03</div>
+        <h4>Cálculo de excedente</h4>
+        <p>Del volumen del mes se descuenta tu mínimo contratado (5,000 o 10,000). El resto se cobra al costo por impresión pactado.</p>
+      </div>
+      <div class="fact-step">
+        <div class="n">04</div>
+        <h4>Semáforo de pago</h4>
+        <p>Facturas al día mantienen tu cuenta en verde. Un atraso mayor a 15 días bloquea tickets y suministros hasta regularizar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="biblioteca">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Autoservicio</div>
+      <h2>Biblioteca para resolver dudas antes de abrir un ticket</h2>
+      <p>Busca por palabra clave o filtra por tema. Si no encuentras respuesta, el paso siguiente siempre es levantar un ticket con soporte.</p>
+    </div>
+    <div class="biblioteca-shell">
+      <div class="search-row">
+        <input type="text" id="searchBox" placeholder="Ej. excedente, garantía, contador...">
+      </div>
+      <div class="chips" id="chipRow">
+        <button class="chip active" data-cat="todos">Todos</button>
+        <button class="chip" data-cat="Facturación">Facturación</button>
+        <button class="chip" data-cat="Lecturas">Lecturas y contador</button>
+        <button class="chip" data-cat="Garantía">Garantía</button>
+        <button class="chip" data-cat="Servicio">Servicio técnico</button>
+        <button class="chip" data-cat="Contrato">Contrato</button>
+      </div>
+      <div class="faq-list" id="faqList"></div>
+      <div class="no-results" id="noResults">No encontramos artículos con esa búsqueda. Intenta con otra palabra o levanta un ticket con soporte.</div>
+    </div>
+  </div>
+</section>
+
+<section id="cotizar">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Paso 1 de 3 — Estimado web</div>
+      <h2>Tu estimado de costo por impresión en 30 segundos</h2>
+      <p>Sin preguntas de infraestructura, sin presupuesto, sin compromiso. Solo lo necesario para darte un número de referencia real — el resto se valida en una llamada de 10 minutos, si te interesa avanzar.</p>
+    </div>
+
+    <div class="funnel-shell">
+      <div class="funnel-top">
+        <span class="funnel-step-label" id="stepLabel">Estimado web</span>
+        <div class="dial-progress" id="dialProgress">
+          <div class="dial-dot current" data-i="1" title="Estimado web (30 segundos)"></div>
+          <div class="dial-dot" data-i="2" title="Llamada con asesor técnico"></div>
+          <div class="dial-dot" data-i="3" title="Propuesta formal post-visita"></div>
+        </div>
+      </div>
+
+      <div class="funnel-body">
+
+        <!-- FORM -->
+        <div class="fp-step" id="formView">
+          <h3>Cuéntanos lo esencial</h3>
+          <p class="sub">6 preguntas, nada más. Nada de blanco y negro vs. color, número de equipos ni infraestructura — eso lo vemos con calma en la llamada.</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Nombre completo</label>
+              <input type="text" id="fNombre" placeholder="Nombre y apellido">
+            </div>
+            <div class="field">
+              <label>Empresa o institución</label>
+              <input type="text" id="fEmpresa" placeholder="Nombre de tu empresa o escuela">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Correo electrónico</label>
+              <input type="email" id="fEmail" placeholder="correo@empresa.com">
+            </div>
+            <div class="field">
+              <label>Teléfono</label>
+              <input type="tel" id="fTelefono" placeholder="55 0000 0000">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Impresiones totales al mes (aprox.)</label>
+              <input type="number" id="fVolumen" placeholder="Ej. 8000" min="1">
+            </div>
+            <div class="field">
+              <label>¿Qué buscas?</label>
+              <select id="fTipoInteres">
+                <option value="" disabled selected>Selecciona una opción</option>
+                <option value="renta">Renta mensual</option>
+                <option value="venta">Compra con garantía</option>
+                <option value="escuela_prepago">Somos escuela (prepago anual)</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="privacy-row">
+            <input type="checkbox" id="fPrivacidad">
+            <span>Acepto el <a href="#" style="color:var(--cyan-light);">Aviso de Privacidad</a> y entiendo que este es un estimado preliminar, no una cotización formal.</span>
+          </label>
+          <div class="fp-error" id="fpError">Completa todos los campos y acepta el aviso de privacidad para continuar.</div>
+
+          <div class="funnel-nav" style="margin-top:22px;">
+            <span class="geo-note" id="geoNote"></span>
+            <button class="btn-next" id="btnEstimar">Ver mi estimado →</button>
+          </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="fp-step step-hidden" id="resultView">
+          <h3 id="rSaludo">Tu estimado, listo</h3>
+          <p class="sub">Basado en <span id="rVolumenTexto">—</span> impresiones al mes. Estimado de referencia — un asesor valida el número real con tu volumen en campo.</p>
+
+          <div class="quote-box">
+            <div class="row"><span>Costo por impresión (CPI) estimado</span><span id="rCpi">—</span></div>
+            <div class="row"><span>Costo mensual estimado</span><span class="quote-total" id="rTotal">—</span></div>
+            <div class="row"><span>Modelo sugerido</span><span id="rModelo">—</span></div>
+            <div class="row"><span>Incluye</span><span>Equipo, tóner, refacciones, servicio, mantenimiento</span></div>
+          </div>
+          <p class="quote-note" id="rNotaModelo"></p>
+          <p class="quote-note">Este es un estimado de referencia. Para una cotización formal con números reales, un asesor técnico necesita validar tu volumen en campo — ese es el Paso 2.</p>
+
+          <div class="cta-row">
+            <button class="btn-primary" id="btnAgendar" style="border:none;">Agendar llamada de 10 minutos</button>
+            <button class="btn-ghost" id="btnContacten">Prefiero que me contacten</button>
+          </div>
+          <div class="thanks-box step-hidden" id="thanksBox"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">MFP RENTAL — equipos multifuncionales para escuelas</div>
+    <div>CDMX y área metropolitana · Contratos sin plazo forzoso</div>
+  </div>
+</footer>
 
 <script>
-    (function() {
-        'use strict';
-        
-        // ─── DOM references ───
-        const form = document.getElementById('estimadoForm');
-        const btn = document.getElementById('btnSubmit');
-        const errorMsg = document.getElementById('errorMsg');
-        const resultContainer = document.getElementById('resultContainer');
-        
-        const nombre = document.getElementById('nombre');
-        const email = document.getElementById('email');
-        const telefono = document.getElementById('telefono');
-        const empresa = document.getElementById('empresa');
-        const volumen = document.getElementById('volumen');
-        const tipoInteres = document.getElementById('tipoInteres');
-        const privacidad = document.getElementById('privacidad');
-        
-        const cpiRango = document.getElementById('cpiRango');
-        const costoMensual = document.getElementById('costoMensual');
-        const modeloSugerido = document.getElementById('modeloSugerido');
-        const ctaAgendar = document.getElementById('ctaAgendar');
-        const contactarEmail = document.getElementById('contactarEmail');
-        
-        // ─── Catálogo de modelos (simulado) ───
-        // En producción, esto vendría del backend vía API.
-        // Basado en ModeloMFP del documento maestro.
-        const catalogoModelos = [
-            {
-                id: 'mod-001',
-                marca: 'Ricoh',
-                modelo: 'IM 430',
-                tipo: 'negro',
-                rendimiento_toner_campo: 10000,   // 1X
-                volumen_optimo_1x: 10000,
-                volumen_maximo_2x: 20000,
-                cpi_referencia_rango: { min: 0.25, max: 0.35 }
-            },
-            {
-                id: 'mod-002',
-                marca: 'Ricoh',
-                modelo: 'IM 550',
-                tipo: 'negro',
-                rendimiento_toner_campo: 18000,
-                volumen_optimo_1x: 18000,
-                volumen_maximo_2x: 36000,
-                cpi_referencia_rango: { min: 0.22, max: 0.30 }
-            },
-            {
-                id: 'mod-003',
-                marca: 'Ricoh',
-                modelo: 'IMC 300',
-                tipo: 'color',
-                rendimiento_toner_campo: 12000,
-                volumen_optimo_1x: 12000,
-                volumen_maximo_2x: 24000,
-                cpi_referencia_rango: { min: 0.40, max: 0.55 }
-            },
-            {
-                id: 'mod-004',
-                marca: 'Ricoh',
-                modelo: 'IMC 600',
-                tipo: 'color',
-                rendimiento_toner_campo: 25000,
-                volumen_optimo_1x: 25000,
-                volumen_maximo_2x: 50000,
-                cpi_referencia_rango: { min: 0.35, max: 0.48 }
-            }
-        ];
-        
-        // ─── Lógica de sugerencia de modelo ───
-        // Regla del documento maestro:
-        // - Buscar modelo cuyo volumen_optimo_1x cubra el volumen declarado.
-        // - Si volumen está entre 1X y 2X → sugerir con nota "límite seguro".
-        // - Si excede 2X de todos → requiere_evaluacion_personalizada = true.
-        function sugerirModelo(volumenDeclarado) {
-            // Ordenar de menor a mayor volumen_optimo_1x
-            const sorted = [...catalogoModelos].sort((a, b) => a.volumen_optimo_1x - b.volumen_optimo_1x);
-            
-            let mejorMatch = null;
-            let nota = '';
-            let requierePersonalizada = false;
-            
-            for (const modelo of sorted) {
-                if (volumenDeclarado <= modelo.volumen_optimo_1x) {
-                    mejorMatch = modelo;
-                    nota = `· ${modelo.volumen_optimo_1x.toLocaleString()} imp/mes (1X)`;
-                    break;
-                }
-                if (volumenDeclarado <= modelo.volumen_maximo_2x) {
-                    mejorMatch = modelo;
-                    nota = `· ${modelo.volumen_optimo_1x.toLocaleString()} imp/mes (1X) — límite seguro, evaluar equipo superior`;
-                    break;
-                }
-            }
-            
-            // Si ningún modelo cubre el volumen (excede 2X de todos)
-            if (!mejorMatch) {
-                requierePersonalizada = true;
-                // Tomar el modelo de mayor capacidad como referencia
-                const ultimo = sorted[sorted.length - 1];
-                return {
-                    modelo: ultimo,
-                    nota: `⚠️ Tu volumen (${volumenDeclarado.toLocaleString()}) excede el límite seguro de ${ultimo.modelo} (${ultimo.volumen_maximo_2x.toLocaleString()}). Requiere evaluación personalizada.`,
-                    requierePersonalizada: true
-                };
-            }
-            
-            return {
-                modelo: mejorMatch,
-                nota: nota,
-                requierePersonalizada: false
-            };
-        }
-        
-        // ─── Formateo de números ───
-        function formatCurrency(value) {
-            return '$' + value.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-        
-        function formatNumber(value) {
-            return value.toLocaleString('es-MX');
-        }
-        
-        // ─── Envío del formulario ───
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validación básica
-            const errors = [];
-            if (!nombre.value.trim()) errors.push('Nombre');
-            if (!email.value.trim() || !email.value.includes('@')) errors.push('Correo');
-            if (!telefono.value.trim()) errors.push('Teléfono');
-            if (!empresa.value.trim()) errors.push('Empresa');
-            if (!volumen.value || parseInt(volumen.value) < 1) errors.push('Volumen');
-            if (!tipoInteres.value) errors.push('Tipo de interés');
-            if (!privacidad.checked) errors.push('Aceptar el Aviso de Privacidad');
-            
-            if (errors.length > 0) {
-                errorMsg.textContent = 'Por favor, completa: ' + errors.join(', ');
-                errorMsg.classList.add('visible');
-                // Scroll al error
-                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-            errorMsg.classList.remove('visible');
-            
-            // ── Simular cálculo ──
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Calculando...';
-            
-            // Simular latencia de red (para UX)
-            setTimeout(function() {
-                const vol = parseInt(volumen.value);
-                const resultado = sugerirModelo(vol);
-                const modelo = resultado.modelo;
-                const cpi = modelo.cpi_referencia_rango;
-                const costoMin = vol * cpi.min;
-                const costoMax = vol * cpi.max;
-                
-                // Actualizar resultados
-                cpiRango.innerHTML = `${formatCurrency(cpi.min)} – ${formatCurrency(cpi.max)} <span>MXN</span>`;
-                costoMensual.textContent = `${formatCurrency(costoMin)} – ${formatCurrency(costoMax)}`;
-                
-                let modeloText = `${modelo.marca} ${modelo.modelo}`;
-                if (resultado.requierePersonalizada) {
-                    modeloText = '⚠️ ' + modeloText + ' — ' + resultado.nota;
-                } else {
-                    modeloText = modeloText + ' ' + resultado.nota;
-                }
-                modeloSugerido.innerHTML = modeloText;
-                
-                // Mostrar resultado
-                resultContainer.classList.add('visible');
-                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-                // Restaurar botón
-                btn.disabled = false;
-                btn.innerHTML = 'Calcular mi estimado';
-                
-                // ── Enviar datos al backend (simulado) ──
-                // En producción, aquí se crea Prospecto + SolicitudCotizacion
-                console.log('📦 Datos del estimado:', {
-                    nombre: nombre.value.trim(),
-                    email: email.value.trim(),
-                    telefono: telefono.value.trim(),
-                    empresa: empresa.value.trim(),
-                    volumen: vol,
-                    tipoInteres: tipoInteres.value,
-                    modelo_sugerido_id: modelo.id,
-                    cpi_estimado_rango: cpi,
-                    costo_mensual_estimado_rango: { min: costoMin, max: costoMax }
-                });
-                
-                // Configurar CTA de agendamiento con datos del prospecto
-                const params = new URLSearchParams({
-                    nombre: nombre.value.trim(),
-                    email: email.value.trim(),
-                    telefono: telefono.value.trim(),
-                    empresa: empresa.value.trim(),
-                    volumen: vol,
-                    tipo: tipoInteres.value,
-                    modelo: modelo.modelo
-                });
-                ctaAgendar.href = '/agendar-llamada?' + params.toString();
-                contactarEmail.href = 'mailto:ventas@solucionesimpresion.mx?subject=Estimado%20de%20impresión%20para%20' + encodeURIComponent(empresa.value.trim()) + '&body=Hola,%20recibí%20el%20estimado%20y%20quiero%20profundizar.';
-                
-            }, 800); // Simulación de 800ms
-        });
-        
-        // ─── Validación en tiempo real: ocultar error al escribir ───
-        document.querySelectorAll('#estimadoForm input, #estimadoForm select').forEach(function(el) {
-            el.addEventListener('input', function() {
-                errorMsg.classList.remove('visible');
-            });
-        });
-        
-    })();
-</script>
+// ---------- Hero meter animation ----------
+(function(){
+  const ini = 184230;
+  let cur = 191845;
+  const elAct = document.getElementById('mAct');
+  const elVol = document.getElementById('mVol');
+  function fmt(n){ return n.toLocaleString('es-MX'); }
+  setInterval(function(){
+    cur += Math.floor(Math.random()*4)+1;
+    elAct.textContent = fmt(cur);
+    elVol.textContent = fmt(cur-ini);
+  }, 2200);
+})();
 
+// ---------- Biblioteca ----------
+const articles = [
+  {cat:"Lecturas", q:"¿Qué es el contador y por qué es tan importante?", a:"Es el registro real de impresiones de tu equipo. Cada mes se toma un contador inicial y uno final; la diferencia entre ambos es lo que se factura. Todo el modelo de precios, garantía y excedente parte de esa lectura."},
+  {cat:"Facturación", q:"¿Cómo se calcula mi factura mensual?", a:"Se compone de la renta base (tu mínimo contratado de 5,000 o 10,000 impresiones) más el excedente, que es el volumen que superó tu mínimo, multiplicado por el costo por impresión pactado en tu contrato."},
+  {cat:"Lecturas", q:"¿Qué pasa si mi consumo supera el doble de mi promedio mensual?", a:"El técnico y la app te muestran el detalle del mes (órdenes de servicio, materiales entregados, rendimiento de tóner) antes de pedirte que confirmes la lectura, para que puedas validar el consumo con evidencia."},
+  {cat:"Facturación", q:"¿Qué es el excedente y cómo se cobra?", a:"Es la diferencia entre lo que imprimiste y tu mínimo mensual contratado. Se cobra por impresión, con una tarifa fija o escalonada según lo definido en tu contrato."},
+  {cat:"Garantía", q:"¿Qué cubre la garantía en equipos comprados?", a:"Una bolsa de impresiones mensual sin costo, que no se acumula de un mes a otro. Te avisamos automáticamente al llegar al 80%, 90% y 100% de tu consumo mensual cubierto."},
+  {cat:"Garantía", q:"¿Qué pasa si no uso toda mi garantía en un mes?", a:"El saldo no utilizado no se acumula mes a mes, pero si al momento de tu renovación hubo consumo consistentemente bajo, ese ahorro se convierte en saldo bonificable aplicable a tu renovación."},
+  {cat:"Lecturas", q:"¿Qué pasa si no confirmo la lectura a tiempo?", a:"Si no respondes en 5 días hábiles después de la visita técnica, el sistema acepta la lectura de forma automática para no retrasar tu facturación."},
+  {cat:"Facturación", q:"¿Cómo funciona el semáforo de pagos?", a:"Verde: sin facturas vencidas o vencidas hasta 5 días, operación normal. Amarillo: una factura vencida entre 6 y 15 días, es solo un aviso preventivo. Rojo: más de 15 días vencida, se bloquean tickets y suministros hasta regularizar el pago."},
+  {cat:"Contrato", q:"¿Puedo cancelar mi contrato de renta?", a:"Sí. Los contratos de renta no tienen plazo forzoso; solo necesitas avisar con un mes de anticipación."},
+  {cat:"Servicio", q:"¿Qué hago si mi equipo falla?", a:"Primero puedes revisar esta biblioteca para descartar causas comunes. Si no resuelve tu problema, puedes levantar un ticket desde tu app y un técnico será asignado según el nivel de servicio de tu contrato."},
+  {cat:"Facturación", q:"¿Cómo se calcula el costo por impresión?", a:"Combina el costo del equipo entre su vida útil en impresiones, el costo del tóner entre su rendimiento real en campo, y el costo de refacciones según las tablas de mantenimiento del fabricante — separado para impresión en blanco y negro y a color."},
+  {cat:"Garantía", q:"¿Los equipos a color tienen el mismo costo por impresión que los de blanco y negro?", a:"No. El costo en color considera cian, magenta y amarillo combinados, mientras que el de blanco y negro corresponde solo al negro (K). Por eso el costo por impresión a color siempre es mayor."},
+];
+
+const faqList = document.getElementById('faqList');
+const noResults = document.getElementById('noResults');
+let activeCat = 'todos';
+
+function renderFaq(){
+  const term = document.getElementById('searchBox').value.trim().toLowerCase();
+  faqList.innerHTML = '';
+  const filtered = articles.filter(a=>{
+    const matchCat = activeCat==='todos' || a.cat===activeCat;
+    const matchTerm = !term || (a.q+a.a).toLowerCase().includes(term);
+    return matchCat && matchTerm;
+  });
+  noResults.style.display = filtered.length ? 'none' : 'block';
+  filtered.forEach((a,i)=>{
+    const item = document.createElement('div');
+    item.className='faq-item';
+    item.innerHTML = `
+      <div class="faq-q">
+        <span>${a.q}</span>
+        <span style="display:flex;align-items:center;gap:12px;">
+          <span class="cat">${a.cat}</span>
+          <span class="faq-toggle">+</span>
+        </span>
+      </div>
+      <div class="faq-a"><p>${a.a}</p></div>
+    `;
+    item.querySelector('.faq-q').addEventListener('click', ()=>{
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(o=>{o.classList.remove('open'); o.querySelector('.faq-toggle').textContent='+';});
+      if(!wasOpen){ item.classList.add('open'); item.querySelector('.faq-toggle').textContent='–'; }
+    });
+    faqList.appendChild(item);
+  });
+}
+document.getElementById('searchBox').addEventListener('input', renderFaq);
+document.getElementById('chipRow').addEventListener('click', (e)=>{
+  if(e.target.classList.contains('chip')){
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    e.target.classList.add('active');
+    activeCat = e.target.dataset.cat;
+    renderFaq();
+  }
+});
+renderFaq();
+
+// ---------- Funnel: Paso 1 — Estimado web (30 segundos) ----------
+
+// Catálogo de modelos: la regla 1X/2X vive en datos, no en if/else.
+// volumen_optimo_1x = rendimiento real de tóner en campo (no el dato de brochure del fabricante).
+// volumen_maximo_2x = límite seguro; por encima, desgaste acelerado.
+const catalogoModelos = [
+  { id:'im430',  nombre:'Ricoh IM 430',  volumen_optimo_1x:10000, volumen_maximo_2x:20000, cpi_rango:[0.27,0.33] },
+  { id:'imc2000',nombre:'Ricoh IM C2000',volumen_optimo_1x:20000, volumen_maximo_2x:40000, cpi_rango:[0.24,0.30] },
+  { id:'im6000', nombre:'Ricoh IM 6000', volumen_optimo_1x:45000, volumen_maximo_2x:90000, cpi_rango:[0.20,0.26] },
+];
+
+function sugerirModelo(volumenMensual){
+  // Busca el modelo cuyo rango 1X cubra el volumen declarado.
+  for(const m of catalogoModelos){
+    if(volumenMensual <= m.volumen_optimo_1x){
+      return { modelo:m, nota:null };
+    }
+  }
+  // Ninguno lo cubre en 1X — revisar si cae en el límite seguro (2X) del más grande.
+  const mayor = catalogoModelos[catalogoModelos.length-1];
+  if(volumenMensual <= mayor.volumen_maximo_2x){
+    return { modelo:mayor, nota:`Estás en el límite seguro (2X) de ${mayor.nombre}. Conviene evaluar un equipo superior o dividir el volumen en más de un equipo.` };
+  }
+  // Excede el 2X de todo el catálogo — no se sugiere modelo automáticamente.
+  return { modelo:null, nota:'Tu volumen excede el rango seguro de nuestro catálogo estándar. Esto requiere evaluación personalizada — un asesor técnico te contactará directamente, sin estimado automático.' };
+}
+
+// Detección pasiva de ubicación — nunca se pregunta en el formulario.
+(function detectarUbicacion(){
+  const nota = document.getElementById('geoNote');
+  if(!nota) return;
+  nota.textContent = 'Detectando zona de servicio…';
+  fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
+    if(d && d.city){
+      nota.textContent = `Zona detectada: ${d.city}${d.region ? ', '+d.region : ''}`;
+      window.__fpUbicacion = `${d.city}, ${d.region || ''}`.trim();
+    } else {
+      nota.textContent = '';
+    }
+  }).catch(()=>{ nota.textContent=''; });
+})();
+
+const fpState = { nombre:'', empresa:'', email:'', telefono:'', volumen:0, tipoInteres:'' };
+
+function fmtMXN(n){ return '$' + Math.round(n).toLocaleString('es-MX') + ' MXN'; }
+
+document.getElementById('btnEstimar').addEventListener('click', ()=>{
+  const err = document.getElementById('fpError');
+  fpState.nombre = document.getElementById('fNombre').value.trim();
+  fpState.empresa = document.getElementById('fEmpresa').value.trim();
+  fpState.email = document.getElementById('fEmail').value.trim();
+  fpState.telefono = document.getElementById('fTelefono').value.trim();
+  fpState.volumen = parseInt(document.getElementById('fVolumen').value || 0);
+  fpState.tipoInteres = document.getElementById('fTipoInteres').value;
+  const privacidadAceptada = document.getElementById('fPrivacidad').checked;
+
+  if(!fpState.nombre || !fpState.empresa || !fpState.email || !fpState.telefono || !fpState.volumen || !fpState.tipoInteres || !privacidadAceptada){
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+
+  const { modelo, nota } = sugerirModelo(fpState.volumen);
+
+  document.getElementById('rSaludo').textContent = `${fpState.nombre.split(' ')[0]}, tu estimado está listo`;
+  document.getElementById('rVolumenTexto').textContent = fpState.volumen.toLocaleString('es-MX');
+
+  if(modelo){
+    const [min,max] = modelo.cpi_rango;
+    const totalMin = fpState.volumen * min;
+    const totalMax = fpState.volumen * max;
+    document.getElementById('rCpi').textContent = `$${min.toFixed(2)}–$${max.toFixed(2)} MXN por impresión`;
+    document.getElementById('rTotal').textContent = `${fmtMXN(totalMin)} – ${fmtMXN(totalMax)} / mes`;
+    document.getElementById('rModelo').textContent = modelo.nombre;
+  } else {
+    document.getElementById('rCpi').textContent = 'Requiere evaluación personalizada';
+    document.getElementById('rTotal').textContent = 'Sin estimado automático';
+    document.getElementById('rModelo').textContent = 'Por definir con asesor';
+  }
+  document.getElementById('rNotaModelo').textContent = nota || '';
+  document.getElementById('rNotaModelo').style.display = nota ? 'block' : 'none';
+
+  document.getElementById('formView').classList.add('step-hidden');
+  document.getElementById('resultView').classList.remove('step-hidden');
+  document.querySelector('.dial-dot[data-i="1"]').classList.add('done');
+  document.querySelector('.dial-dot[data-i="1"]').classList.remove('current');
+  document.querySelector('.dial-dot[data-i="2"]').classList.add('current');
+  document.getElementById('stepLabel').textContent = 'Estimado entregado';
+});
+
+function cerrarConMensaje(msg){
+  document.querySelector('.cta-row').classList.add('step-hidden');
+  const box = document.getElementById('thanksBox');
+  box.innerHTML = msg;
+  box.classList.remove('step-hidden');
+}
+
+document.getElementById('btnAgendar').addEventListener('click', ()=>{
+  cerrarConMensaje(`<strong>Listo.</strong> En breve verías aquí un calendario para agendar tu llamada de 10 minutos con un asesor técnico — el Paso 2 del embudo. En esta llamada se recolecta volumen por equipo, blanco y negro vs. color, y el estado de tus equipos actuales.`);
+});
+document.getElementById('btnContacten').addEventListener('click', ()=>{
+  cerrarConMensaje(`<strong>Perfecto, ${fpState.nombre.split(' ')[0] || ''}.</strong> Un asesor te contactará al ${fpState.telefono || 'teléfono que registraste'} dentro de las próximas 24 horas.`);
+});
+</script>
 </body>
 </html>
