@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Asesor — MFP Rental · Paso 2: Cotización Detallada</title>
+    <style>
+        /* ─── BASE ─── */
+        :root {
+            --ink: #14171C;
+            --navy: #1B2430;
+            --navy-2: #232E3D;
+            --paper: #EDEEEA;
+            --paper-warm: #F7F6F2;
+            --cyan: #0F7A88;
+            --cyan-light: #3FB6C4;
+            --amber: #C97A2E;
+            --amber-light: #E0A968;
+            --line: #D8D5CC;
+            --line-dark: #39465A;
+            --green: #2E7D32;
+            --green-light: #66BB6A;
+            --red: #C62828;
+            --red-light: #EF5350;
+            --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-body);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.5;
+            padding: 24px;
+            min-height: 100vh;
+        }
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ─── HEADER ─── */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: var(--navy);
+            border-radius: 12px;
+            color: var(--paper-warm);
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .app-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.02em;
+        }
+        .app-header .brand .dial {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--cyan-light);
+            position: relative;
+            flex: none;
+        }
+        .app-header .brand .dial::after {
+            content: "";
+            position: absolute;
+            top: 1px;
+            left: 9px;
+            width: 2px;
+            height: 8px;
+            background: var(--cyan-light);
+            transform-origin: 1px 10px;
+            animation: spin 6s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .app-header .user {
+            font-size: 13px;
+            color: #B7C0CC;
+        }
+        .app-header .user strong {
+            color: var(--paper-warm);
+        }
+        .app-header .badge-role {
+            background: var(--cyan);
+            padding: 4px 14px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #fff;
+        }
+
+        /* ─── BREADCRUMB ─── */
+        .breadcrumb {
+            display: flex;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .breadcrumb span {
+            color: var(--ink);
+            font-weight: 600;
+        }
+        .breadcrumb .sep {
+            color: #94a3b8;
+        }
+
+        /* ─── GRID PRINCIPAL ─── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 28px;
+        }
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ─── TARJETAS ─── */
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            padding: 24px 28px;
+            border: 1px solid var(--line);
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-sub {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+        .card .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge.cyan {
+            background: rgba(15, 122, 136, 0.12);
+            color: var(--cyan);
+        }
+        .badge.amber {
+            background: rgba(201, 122, 46, 0.14);
+            color: var(--amber);
+        }
+        .badge.green {
+            background: rgba(46, 125, 50, 0.12);
+            color: var(--green);
+        }
+        .badge.red {
+            background: rgba(198, 40, 40, 0.12);
+            color: var(--red);
+        }
+
+        /* ─── RESUMEN DEL PROSPECTO (PASO 1) ─── */
+        .prospect-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 24px;
+            background: var(--paper-warm);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 480px) {
+            .prospect-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+        .prospect-summary .item {
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--line);
+        }
+        .prospect-summary .item:last-child {
+            border-bottom: none;
+        }
+        .prospect-summary .label {
+            color: #64748b;
+        }
+        .prospect-summary .value {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        /* ─── FORMULARIO ─── */
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        .form-group label .required {
+            color: var(--red);
+            margin-left: 2px;
+        }
+        .form-group .hint {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1.5px solid var(--line);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--ink);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 4px rgba(15, 122, 136, 0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .form-group .field-hint {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        @media (max-width: 480px) {
+            .row-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ─── CALIFICACIÓN (CALIENTE/TIBIO/FRÍO) ─── */
+        .calificacion-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 600px) {
+            .calificacion-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .cal-option {
+            border: 2px solid var(--line);
+            border-radius: 8px;
+            padding: 14px 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color 0.2s, background 0.2s;
+            background: #fff;
+        }
+        .cal-option:hover {
+            border-color: var(--cyan-light);
+        }
+        .cal-option.selected {
+            border-color: var(--cyan);
+            background: rgba(15, 122, 136, 0.06);
+        }
+        .cal-option .emoji {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .cal-option .label {
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .cal-option .desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .cal-option .criteria {
+            font-size: 10.5px;
+            color: #94a3b8;
+            margin-top: 4px;
+            display: none;
+        }
+        .cal-option.selected .criteria {
+            display: block;
+        }
+        .cal-option.hot {
+            border-color: var(--red-light);
+        }
+        .cal-option.hot.selected {
+            background: rgba(198, 40, 40, 0.06);
+            border-color: var(--red);
+        }
+        .cal-option.warm {
+            border-color: var(--amber-light);
+        }
+        .cal-option.warm.selected {
+            background: rgba(201, 122, 46, 0.06);
+            border-color: var(--amber);
+        }
+        .cal-option.cold {
+            border-color: #94a3b8;
+        }
+        .cal-option.cold.selected {
+            background: rgba(148, 163, 184, 0.06);
+            border-color: #64748b;
+        }
+
+        /* ─── CHECKLIST ─── */
+        .checklist {
+            margin: 16px 0 8px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13.5px;
+        }
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        .checklist-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            margin-top: 2px;
+            accent-color: var(--cyan);
+            cursor: pointer;
+        }
+        .checklist-item .detail {
+            font-size: 12px;
+            color: #94a3b8;
+            display: block;
+        }
+        .checklist-item .tag {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 1px 10px;
+            border-radius: 100px;
+            background: var(--paper-warm);
+            color: #64748b;
+            margin-left: 6px;
+        }
+
+        /* ─── BOTONES ─── */
+        .btn-primary {
+            background: var(--amber);
+            color: var(--ink);
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover {
+            background: var(--amber-light);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--ink);
+            font-weight: 600;
+            padding: 14px 24px;
+            border-radius: 8px;
+            border: 1.5px solid var(--line);
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background: var(--paper-warm);
+            border-color: var(--line-dark);
+        }
+
+        .btn-success {
+            background: var(--green);
+            color: #fff;
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-success:hover {
+            background: var(--green-light);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #64748b;
+            border: none;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .btn-ghost:hover {
+            color: var(--ink);
+        }
+
+        .actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+        }
+
+        /* ─── INDICADORES DE TEMPERATURA ─── */
+        .temp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .temp-badge.hot {
+            background: rgba(198, 40, 40, 0.12);
+            color: var(--red);
+        }
+        .temp-badge.warm {
+            background: rgba(201, 122, 46, 0.14);
+            color: var(--amber);
+        }
+        .temp-badge.cold {
+            background: rgba(148, 163, 184, 0.15);
+            color: #64748b;
+        }
+
+        /* ─── ALERTAS ─── */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border-left: 4px solid;
+        }
+        .alert-info {
+            background: rgba(15, 122, 136, 0.08);
+            border-color: var(--cyan);
+            color: var(--ink);
+        }
+        .alert-warning {
+            background: rgba(201, 122, 46, 0.10);
+            border-color: var(--amber);
+            color: var(--ink);
+        }
+        .alert-success {
+            background: rgba(46, 125, 50, 0.08);
+            border-color: var(--green);
+            color: var(--ink);
+        }
+        .alert-danger {
+            background: rgba(198, 40, 40, 0.08);
+            border-color: var(--red);
+            color: var(--ink);
+        }
+        .alert strong {
+            font-weight: 700;
+        }
+
+        /* ─── UTILITIES ─── */
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .mt-24 {
+            margin-top: 24px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .mb-16 {
+            margin-bottom: 16px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-muted {
+            color: #64748b;
+            font-size: 13px;
+        }
+        .flex {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* ─── TOGGLE DE SECCIONES ─── */
+        .section-toggle {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .section-toggle .icon {
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+        .section-toggle.open .icon {
+            transform: rotate(180deg);
+        }
+        .section-content {
+            display: none;
+            padding-top: 16px;
+        }
+        .section-content.open {
+            display: block;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            .app-header {
+                padding: 12px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .app-header .user {
+                font-size: 12px;
+            }
+        }
+
+        /* ─── ESTADO DE CARGA ─── */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ─── MODAL DE CONFIRMACIÓN ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.visible {
+            display: flex;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px 36px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.25s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .modal h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .modal p {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+        .modal .actions {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrap">
+
+        <!-- ─── HEADER ─── -->
+        <header class="app-header">
+            <div class="brand">
+                <span class="dial"></span>
+                MFP RENTAL
+                <span class="badge-role">Asesor Técnico</span>
+            </div>
+            <div class="user">
+                <strong id="asesorNombre">Carlos Rivera</strong> · <span id="asesorFecha">24 de julio de 2026</span>
+            </div>
+        </header>
+
+        <!-- ─── BREADCRUMB ─── -->
+        <div class="breadcrumb">
+            <a href="#" style="color:var(--cyan);text-decoration:none;">Dashboard</a>
+            <span class="sep">/</span>
+            <a href="#" style="color:var(--cyan);text-decoration:none;">Prospectos</a>
+            <span class="sep">/</span>
+            <span>Paso 2: Cotización Detallada</span>
+        </div>
+
+        <!-- ─── GRID PRINCIPAL ─── -->
+        <div class="grid-2">
+
+            <!-- ─── COLUMNA IZQUIERDA: DATOS DEL PROSPECTO ─── -->
+            <div>
+
+                <!-- Tarjeta: Resumen del Paso 1 -->
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-title">
+                        📋 Prospecto
+                        <span class="badge cyan" id="prospectoID">#PRO-2026-0042</span>
+                    </div>
+                    <div class="card-sub">Datos capturados en el estimado web (Paso 1).</div>
+
+                    <div class="prospect-summary" id="prospectSummary">
+                        <div class="item"><span class="label">Nombre</span><span class="value" id="pNombre">Ana Martínez</span></div>
+                        <div class="item"><span class="label">Empresa</span><span class="value" id="pEmpresa">Colegio Las Américas</span></div>
+                        <div class="item"><span class="label">Correo</span><span class="value" id="pEmail">ana@colegioamericas.edu.mx</span></div>
+                        <div class="item"><span class="label">Teléfono</span><span class="value" id="pTelefono">55 1234 5678</span></div>
+                        <div class="item"><span class="label">Volumen declarado</span><span class="value" id="pVolumen">12,000</span></div>
+                        <div class="item"><span class="label">Tipo de interés</span><span class="value" id="pTipo">Escuela prepago anual</span></div>
+                        <div class="item"><span class="label">CPI estimado</span><span class="value" id="pCpi">$0.27 – $0.33 MXN</span></div>
+                        <div class="item"><span class="label">Modelo sugerido</span><span class="value" id="pModelo">Ricoh IM 430</span></div>
+                    </div>
+
+                    <!-- Botón para cargar datos desde el Paso 1 -->
+                    <button class="btn-ghost" id="btnCargarProspecto" style="font-size:12px;">
+                        ⬆ Cargar datos desde el Paso 1 (simulado)
+                    </button>
+                </div>
+
+                <!-- Tarjeta: Calificación del Lead -->
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-title">
+                        🎯 Calificación del lead
+                        <span class="temp-badge" id="tempBadgeDisplay">Sin calificar</span>
+                    </div>
+                    <div class="card-sub">Selecciona la temperatura según los criterios de la llamada.</div>
+
+                    <div class="calificacion-grid" id="calificacionGrid">
+                        <div class="cal-option hot" data-temp="caliente">
+                            <span class="emoji">🔥</span>
+                            <div class="label">Caliente</div>
+                            <div class="desc">Compra en < 15 días</div>
+                            <div class="criteria">
+                                ✅ Volumen registrado en contadores<br>
+                                ✅ Dolor claro (fallas semanales)<br>
+                                ✅ Presupuesto definido<br>
+                                ✅ Acepta visita
+                            </div>
+                        </div>
+                        <div class="cal-option warm" data-temp="tibio">
+                            <span class="emoji">🌤️</span>
+                            <div class="label">Tibio</div>
+                            <div class="desc">Compra en 1–3 meses</div>
+                            <div class="criteria">
+                                ⚠️ Volumen estimado<br>
+                                ⚠️ Molestia ocasional<br>
+                                ⚠️ Presupuesto en definición<br>
+                                ⚠️ Considera visita
+                            </div>
+                        </div>
+                        <div class="cal-option cold" data-temp="frio">
+                            <span class="emoji">❄️</span>
+                            <div class="label">Frío</div>
+                            <div class="desc">Solo cotiza / > 3 meses</div>
+                            <div class="criteria">
+                                ❌ Volumen desconocido<br>
+                                ❌ Sin problema actual<br>
+                                ❌ Sin presupuesto<br>
+                                ❌ No acepta visita
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info" id="tempAlert" style="display:none;">
+                        <strong id="tempAlertTitle">Lead calificado como:</strong>
+                        <span id="tempAlertDesc">Selecciona una opción arriba.</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta: Próximos Pasos -->
+                <div class="card">
+                    <div class="card-title">📅 Próximos pasos</div>
+                    <div class="card-sub">Acciones programadas después de la llamada.</div>
+
+                    <div class="form-group">
+                        <label for="proximaAccion">Próxima acción</label>
+                        <select id="proximaAccion">
+                            <option value="">Selecciona...</option>
+                            <option value="visita">Agendar visita en campo</option>
+                            <option value="propuesta">Enviar propuesta formal</option>
+                            <option value="seguimiento_llamada">Seguimiento telefónico</option>
+                            <option value="seguimiento_email">Seguimiento por correo</option>
+                            <option value="cerrar">Cerrar seguimiento (descartado)</option>
+                        </select>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="fechaProxima">Fecha de próxima acción</label>
+                            <input type="date" id="fechaProxima" />
+                        </div>
+                        <div class="form-group">
+                            <label for="responsable">Responsable</label>
+                            <input type="text" id="responsable" value="Carlos Rivera" />
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning" id="alertaSeguimiento" style="display:none;">
+                        ⚠️ <strong>Sin próxima acción programada.</strong> El semáforo comercial se pondrá en amarillo en 3 días hábiles.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ─── COLUMNA DERECHA: FORMULARIO DE REGISTRO ─── -->
+            <div>
+
+                <!-- Tarjeta: Volumen Validado -->
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-title">
+                        📊 Volumen validado
+                        <span class="badge amber" id="confiabilidadBadge">⚠️ Verificar</span>
+                    </div>
+                    <div class="card-sub">Datos recolectados en la llamada. Comparar con el estimado del Paso 1.</div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>Volumen total mensual <span class="required">*</span></label>
+                            <input type="number" id="vTotal" placeholder="Ej: 12000" />
+                            <span class="field-hint">Confirmado en llamada</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="vConfiabilidad">Confiabilidad del dato <span class="required">*</span></label>
+                            <select id="vConfiabilidad">
+                                <option value="">Selecciona...</option>
+                                <option value="registrado_en_contador">✅ Registrado en contadores</option>
+                                <option value="estimado_aproximado">⚠️ Estimado aproximado</option>
+                                <option value="desconocido">❌ Desconocido / No sabe</option>
+                                <option value="calculo_proveedor_anterior">📄 Cálculo de proveedor anterior</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="vBn">Volumen BLANCO Y NEGRO</label>
+                            <input type="number" id="vBn" placeholder="Ej: 8000" />
+                        </div>
+                        <div class="form-group">
+                            <label for="vColor">Volumen COLOR</label>
+                            <input type="number" id="vColor" placeholder="Ej: 4000" />
+                        </div>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="vTotalEquipos">Número total de equipos</label>
+                            <input type="number" id="vTotalEquipos" placeholder="Ej: 3" />
+                        </div>
+                        <div class="form-group">
+                            <label for="vMfp">Número de MFP (multifuncionales)</label>
+                            <input type="number" id="vMfp" placeholder="Ej: 2" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vEquiposDetalle">Volumen por equipo (detalle)</label>
+                        <textarea id="vEquiposDetalle" placeholder="Ej: Equipo 1 (IM 430): 8,000 imp/mes&#10;Equipo 2 (IMC 300): 4,000 imp/mes"></textarea>
+                        <span class="field-hint">Este dato permite identificar sobresaturación (>2X).</span>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="vPico">Pico estacional (mes)</label>
+                            <select id="vPico">
+                                <option value="">Sin pico definido</option>
+                                <option value="Enero">Enero</option>
+                                <option value="Febrero">Febrero</option>
+                                <option value="Marzo">Marzo</option>
+                                <option value="Abril">Abril</option>
+                                <option value="Mayo">Mayo</option>
+                                <option value="Junio">Junio</option>
+                                <option value="Julio">Julio</option>
+                                <option value="Agosto">Agosto</option>
+                                <option value="Septiembre">Septiembre</option>
+                                <option value="Octubre">Octubre</option>
+                                <option value="Noviembre">Noviembre</option>
+                                <option value="Diciembre">Diciembre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="vPicoVolumen">Volumen en pico</label>
+                            <input type="number" id="vPicoVolumen" placeholder="Ej: 18000" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta: Estado Actual del Equipo -->
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-title">🔧 Estado actual del equipo</div>
+                    <div class="card-sub">Información del equipo que tienen actualmente.</div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="eMarca">Marca actual</label>
+                            <input type="text" id="eMarca" placeholder="Ej: Ricoh" />
+                        </div>
+                        <div class="form-group">
+                            <label for="eModelo">Modelo actual</label>
+                            <input type="text" id="eModelo" placeholder="Ej: IM C300" />
+                        </div>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="eToner">Tóner usado <span class="required">*</span></label>
+                            <select id="eToner">
+                                <option value="">Selecciona...</option>
+                                <option value="original">Original del fabricante</option>
+                                <option value="generico">Genérico</option>
+                                <option value="mixto">Ambos / Mixto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="eFrecuenciaFallas">Frecuencia de fallas <span class="required">*</span></label>
+                            <select id="eFrecuenciaFallas">
+                                <option value="">Selecciona...</option>
+                                <option value="nunca">Nunca / Casi nunca</option>
+                                <option value="mensual">1 vez al mes</option>
+                                <option value="varias">Varias veces al mes</option>
+                                <option value="semanal">Semanalmente</option>
+                                <option value="diario">Diariamente</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eProblema">Principal problema con el equipo actual <span class="required">*</span></label>
+                        <textarea id="eProblema" placeholder="Ej: Las impresiones salen manchadas, el tóner no rinde lo que dice el fabricante, el servicio técnico tarda mucho..."></textarea>
+                        <span class="field-hint">Este es el "dolor" que vende.</span>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="eContrato">¿Tienen contrato de mantenimiento vigente?</label>
+                            <select id="eContrato">
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="eContratoTiempo">Tiempo restante de contrato</label>
+                            <input type="text" id="eContratoTiempo" placeholder="Ej: 3 meses / N/A" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eMotivoCambio">Motivo de cambio de proveedor <span class="required">*</span></label>
+                        <textarea id="eMotivoCambio" placeholder="Ej: No cumplen con el SLA, precios muy altos, equipos viejos..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Tarjeta: Checklist de Validación en Campo -->
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="section-toggle open" id="toggleChecklist">
+                        <span class="card-title" style="margin:0;">✅ Checklist de validación en campo</span>
+                        <span class="icon">▾</span>
+                    </div>
+                    <div class="section-content open" id="checklistContent">
+
+                        <div class="alert alert-info">
+                            📋 Este checklist se llena <strong>durante la visita</strong>. No es necesario completarlo en la llamada.
+                        </div>
+
+                        <div class="checklist">
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkContador" />
+                                <label for="chkContador">
+                                    <strong>Contador verificado</strong>
+                                    <span class="detail">Foto del contador de cada equipo registrada</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkSerie" />
+                                <label for="chkSerie">
+                                    <strong>Número de serie registrado</strong>
+                                    <span class="detail">De cada equipo (foto o anotación)</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkEntorno" />
+                                <label for="chkEntorno">
+                                    <strong>Condiciones de instalación</strong>
+                                    <span class="detail">Temperatura, humedad, espacio, ventilación</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkPapel" />
+                                <label for="chkPapel">
+                                    <strong>Tipo de papel verificado</strong>
+                                    <span class="detail">Calidad, gramaje</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkToner" />
+                                <label for="chkToner">
+                                    <strong>Tóner fotografiado</strong>
+                                    <span class="detail">Para verificar original vs genérico</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkRefacciones" />
+                                <label for="chkRefacciones">
+                                    <strong>Estado de refacciones evaluado</strong>
+                                    <span class="detail">PCU, fusor, transfer roller, feed rollers</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkPersonaAutorizada" />
+                                <label for="chkPersonaAutorizada">
+                                    <strong>Persona autorizada registrada</strong>
+                                    <span class="detail">Nombre, puesto y celular de quien autoriza el acceso</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkFirma" />
+                                <label for="chkFirma">
+                                    <strong>Firma de lectura registrada</strong>
+                                    <span class="detail">Técnico + persona autorizada, con evidencia fotográfica</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkRed" />
+                                <label for="chkRed">
+                                    <strong>Infraestructura de red verificada</strong>
+                                    <span class="detail">Conexión, cable/Wi-Fi, configuración de red</span>
+                                </label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chkFotos" />
+                                <label for="chkFotos">
+                                    <strong>Fotos del entorno</strong>
+                                    <span class="detail">Espacio, conexiones, ubicación del equipo</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-16">
+                            <label for="chkNotas">Notas adicionales de la visita</label>
+                            <textarea id="chkNotas" placeholder="Cualquier observación relevante..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta: Necesidades y Decisión -->
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-title">🧭 Necesidades y decisión</div>
+                    <div class="card-sub">Datos para calificar la urgencia y el presupuesto.</div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label for="dPresupuesto">¿Tienen presupuesto definido? <span class="required">*</span></label>
+                            <select id="dPresupuesto">
+                                <option value="">Selecciona...</option>
+                                <option value="si">Sí</option>
+                                <option value="en_definicion">En definición</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dPlazo">¿Cuándo necesitan decidir? <span class="required">*</span></label>
+                            <select id="dPlazo">
+                                <option value="">Selecciona...</option>
+                                <option value="semana">Esta semana</option>
+                                <option value="15_dias">En 15 días</option>
+                                <option value="1_mes">En 1 mes</option>
+                                <option value="3_meses">En 3 meses o más</option>
+                                <option value="solo_cotizando">Solo cotizando (sin fecha)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dObservaciones">Observaciones de la llamada</label>
+                        <textarea id="dObservaciones" placeholder="Impresiones generales, objeciones, competencia, etc."></textarea>
+                    </div>
+
+                    <div class="alert alert-success" id="leadReadyAlert" style="display:none;">
+                        ✅ <strong>Lead calificado.</strong> Todos los datos obligatorios están completos.
+                    </div>
+                </div>
+
+                <!-- ─── ACCIONES ─── -->
+                <div class="card">
+                    <div class="actions">
+                        <button class="btn-primary" id="btnGuardarProgreso">💾 Guardar progreso</button>
+                        <button class="btn-success" id="btnCompletarPaso2">✅ Completar Paso 2</button>
+                        <button class="btn-secondary" id="btnVolver">← Volver</button>
+                    </div>
+                    <div style="margin-top:12px;font-size:12px;color:#94a3b8;">
+                        <span id="saveStatus">Listo para guardar</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ─── MODAL DE CONFIRMACIÓN ─── -->
+        <div class="modal-overlay" id="modalConfirm">
+            <div class="modal">
+                <h3>✅ Paso 2 completado</h3>
+                <p id="modalMessage">
+                    El lead ha sido calificado y los datos han sido registrados.
+                    <br><br>
+                    <strong>Próximo paso:</strong> El asesor técnico agenda la visita en campo para validar los contadores y condiciones de instalación.
+                    <br><br>
+                    Una vez realizada la visita, se procede al <strong>Paso 3: Propuesta Formal</strong>.
+                </p>
+                <div class="actions">
+                    <button class="btn-primary" id="modalCerrar">Entendido</button>
+                    <button class="btn-secondary" id="modalVerResumen">Ver resumen del lead</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── DOM REFS ───
+            const calOptions = document.querySelectorAll('.cal-option');
+            const tempBadgeDisplay = document.getElementById('tempBadgeDisplay');
+            const tempAlert = document.getElementById('tempAlert');
+            const tempAlertTitle = document.getElementById('tempAlertTitle');
+            const tempAlertDesc = document.getElementById('tempAlertDesc');
+
+            const btnGuardar = document.getElementById('btnGuardarProgreso');
+            const btnCompletar = document.getElementById('btnCompletarPaso2');
+            const btnVolver = document.getElementById('btnVolver');
+            const saveStatus = document.getElementById('saveStatus');
+
+            const modal = document.getElementById('modalConfirm');
+            const modalCerrar = document.getElementById('modalCerrar');
+            const modalVerResumen = document.getElementById('modalVerResumen');
+
+            const alertaSeguimiento = document.getElementById('alertaSeguimiento');
+            const proximaAccion = document.getElementById('proximaAccion');
+            const fechaProxima = document.getElementById('fechaProxima');
+
+            const leadReadyAlert = document.getElementById('leadReadyAlert');
+
+            // ─── CALIFICACIÓN ───
+            let tempSeleccionada = null;
+
+            calOptions.forEach(el => {
+                el.addEventListener('click', function() {
+                    calOptions.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    tempSeleccionada = this.dataset.temp;
+
+                    const labels = {
+                        'caliente': { text: '🔥 CALIENTE', class: 'hot', desc: 'Compra en < 15 días. Prioridad máxima.' },
+                        'tibio': { text: '🌤️ TIBIO', class: 'warm', desc: 'Compra en 1–3 meses. Seguimiento programado.' },
+                        'frio': { text: '❄️ FRÍO', class: 'cold', desc: 'Solo cotiza. Mantener en base de datos.' }
+                    };
+
+                    const info = labels[tempSeleccionada];
+                    tempBadgeDisplay.textContent = info.text;
+                    tempBadgeDisplay.className = 'temp-badge ' + info.class;
+
+                    tempAlert.style.display = 'block';
+                    tempAlertTitle.textContent = 'Lead calificado como:';
+                    tempAlertDesc.textContent = info.desc;
+
+                    // Cambiar color del alert
+                    tempAlert.className = 'alert ' + (
+                        tempSeleccionada === 'caliente' ? 'alert-danger' :
+                        tempSeleccionada === 'tibio' ? 'alert-warning' :
+                        'alert-info'
+                    );
+
+                    validarCompletitud();
+                });
+            });
+
+            // ─── VALIDACIÓN DE COMPLETITUD ───
+            function validarCompletitud() {
+                const camposObligatorios = [
+                    document.getElementById('vTotal'),
+                    document.getElementById('vConfiabilidad'),
+                    document.getElementById('eToner'),
+                    document.getElementById('eFrecuenciaFallas'),
+                    document.getElementById('eProblema'),
+                    document.getElementById('eMotivoCambio'),
+                    document.getElementById('dPresupuesto'),
+                    document.getElementById('dPlazo')
+                ];
+
+                let todosLlenos = true;
+                camposObligatorios.forEach(campo => {
+                    if (!campo.value || campo.value === '') {
+                        todosLlenos = false;
+                    }
+                });
+
+                if (!tempSeleccionada) todosLlenos = false;
+
+                // Volumen B/N + Color deben sumar al total (si están llenos)
+                const total = parseInt(document.getElementById('vTotal').value) || 0;
+                const bn = parseInt(document.getElementById('vBn').value) || 0;
+                const color = parseInt(document.getElementById('vColor').value) || 0;
+                const suma = bn + color;
+                if (bn > 0 || color > 0) {
+                    if (suma !== total && total > 0) {
+                        todosLlenos = false;
+                        // Mostrar advertencia sutil
+                    }
+                }
+
+                if (todosLlenos && tempSeleccionada) {
+                    leadReadyAlert.style.display = 'block';
+                } else {
+                    leadReadyAlert.style.display = 'none';
+                }
+
+                return todosLlenos && tempSeleccionada !== null;
+            }
+
+            // Escuchar cambios en campos obligatorios
+            document.querySelectorAll('#vTotal, #vConfiabilidad, #eToner, #eFrecuenciaFallas, #eProblema, #eMotivoCambio, #dPresupuesto, #dPlazo')
+                .forEach(el => {
+                    el.addEventListener('change', validarCompletitud);
+                    el.addEventListener('input', validarCompletitud);
+                });
+
+            // ─── PRÓXIMA ACCIÓN ───
+            proximaAccion.addEventListener('change', function() {
+                if (this.value && this.value !== '') {
+                    alertaSeguimiento.style.display = 'none';
+                    // Si no hay fecha, poner una por defecto (3 días hábiles)
+                    if (!fechaProxima.value) {
+                        const hoy = new Date();
+                        const dias = 3;
+                        let fecha = new Date(hoy);
+                        fecha.setDate(fecha.getDate() + dias);
+                        // Saltar fines de semana (simple)
+                        while (fecha.getDay() === 0 || fecha.getDay() === 6) {
+                            fecha.setDate(fecha.getDate() + 1);
+                        }
+                        fechaProxima.value = fecha.toISOString().split('T')[0];
+                    }
+                } else {
+                    alertaSeguimiento.style.display = 'block';
+                }
+            });
+
+            // Si se pone fecha pero no acción, alerta
+            fechaProxima.addEventListener('change', function() {
+                if (this.value && !proximaAccion.value) {
+                    alertaSeguimiento.style.display = 'block';
+                } else if (this.value && proximaAccion.value) {
+                    alertaSeguimiento.style.display = 'none';
+                }
+            });
+
+            // ─── CARGAR DATOS DEL PASO 1 (SIMULADO) ───
+            document.getElementById('btnCargarProspecto').addEventListener('click', function() {
+                // Simular carga de datos desde el Paso 1
+                const datos = {
+                    nombre: 'Ana Martínez',
+                    empresa: 'Colegio Las Américas',
+                    email: 'ana@colegioamericas.edu.mx',
+                    telefono: '55 1234 5678',
+                    volumen: '12,000',
+                    tipo: 'Escuela prepago anual',
+                    cpi: '$0.27 – $0.33 MXN',
+                    modelo: 'Ricoh IM 430'
+                };
+
+                document.getElementById('pNombre').textContent = datos.nombre;
+                document.getElementById('pEmpresa').textContent = datos.empresa;
+                document.getElementById('pEmail').textContent = datos.email;
+                document.getElementById('pTelefono').textContent = datos.telefono;
+                document.getElementById('pVolumen').textContent = datos.volumen;
+                document.getElementById('pTipo').textContent = datos.tipo;
+                document.getElementById('pCpi').textContent = datos.cpi;
+                document.getElementById('pModelo').textContent = datos.modelo;
+
+                // Prellenar campos del formulario
+                document.getElementById('vTotal').value = datos.volumen.replace(/,/g, '');
+                document.getElementById('eProblema').value = 'Las impresiones salen manchadas, el tóner no rinde lo que dice el fabricante, el servicio técnico tarda mucho.';
+                document.getElementById('eMotivoCambio').value = 'No cumplen con el SLA, precios muy altos, equipos viejos.';
+
+                saveStatus.textContent = '✅ Datos del Paso 1 cargados';
+                saveStatus.style.color = 'var(--green)';
+
+                validarCompletitud();
+            });
+
+            // ─── GUARDAR PROGRESO ───
+            btnGuardar.addEventListener('click', function() {
+                this.disabled = true;
+                this.innerHTML = '<span class="spinner"></span> Guardando...';
+
+                setTimeout(() => {
+                    this.innerHTML = '💾 Guardar progreso';
+                    this.disabled = false;
+                    saveStatus.textContent = '✅ Progreso guardado a las ' + new Date().toLocaleTimeString();
+                    saveStatus.style.color = 'var(--green)';
+
+                    // En producción: POST a /api/solicitud-cotizacion
+                    console.log('📦 Datos del Paso 2 guardados:', recolectarDatos());
+                }, 800);
+            });
+
+            // ─── RECOLECTAR DATOS ───
+            function recolectarDatos() {
+                return {
+                    prospecto: {
+                        nombre: document.getElementById('pNombre').textContent,
+                        empresa: document.getElementById('pEmpresa').textContent,
+                        email: document.getElementById('pEmail').textContent,
+                        telefono: document.getElementById('pTelefono').textContent,
+                        tipo_interes: document.getElementById('pTipo').textContent,
+                    },
+                    solicitud_cotizacion: {
+                        tipo_solicitud: 'cotizacion_detallada',
+                        volumen_global_mensual: parseInt(document.getElementById('vTotal').value) || 0,
+                        confiabilidad_volumen_declarado: document.getElementById('vConfiabilidad').value,
+                        volumen_bn: parseInt(document.getElementById('vBn').value) || 0,
+                        volumen_color: parseInt(document.getElementById('vColor').value) || 0,
+                        total_equipos: parseInt(document.getElementById('vTotalEquipos').value) || 0,
+                        total_mfp: parseInt(document.getElementById('vMfp').value) || 0,
+                        equipos_detalle: document.getElementById('vEquiposDetalle').value,
+                        pico_estacional_mes: document.getElementById('vPico').value || null,
+                        pico_estacional_volumen: parseInt(document.getElementById('vPicoVolumen').value) || 0,
+                        estado_actual: {
+                            marca: document.getElementById('eMarca').value,
+                            modelo: document.getElementById('eModelo').value,
+                            toner: document.getElementById('eToner').value,
+                            frecuencia_fallas: document.getElementById('eFrecuenciaFallas').value,
+                            problema_principal: document.getElementById('eProblema').value,
+                            contrato_vigente: document.getElementById('eContrato').value,
+                            contrato_tiempo: document.getElementById('eContratoTiempo').value,
+                            motivo_cambio: document.getElementById('eMotivoCambio').value,
+                        },
+                        necesidades: {
+                            presupuesto_definido: document.getElementById('dPresupuesto').value,
+                            plazo_decision: document.getElementById('dPlazo').value,
+                            observaciones: document.getElementById('dObservaciones').value,
+                        },
+                        checklist: {
+                            contador: document.getElementById('chkContador').checked,
+                            serie: document.getElementById('chkSerie').checked,
+                            entorno: document.getElementById('chkEntorno').checked,
+                            papel: document.getElementById('chkPapel').checked,
+                            toner_foto: document.getElementById('chkToner').checked,
+                            refacciones: document.getElementById('chkRefacciones').checked,
+                            persona_autorizada: document.getElementById('chkPersonaAutorizada').checked,
+                            firma: document.getElementById('chkFirma').checked,
+                            red: document.getElementById('chkRed').checked,
+                            fotos: document.getElementById('chkFotos').checked,
+                            notas: document.getElementById('chkNotas').value,
+                        },
+                        calificacion: {
+                            temperatura: tempSeleccionada,
+                            proxima_accion: document.getElementById('proximaAccion').value,
+                            fecha_proxima: document.getElementById('fechaProxima').value,
+                            responsable: document.getElementById('responsable').value,
+                        }
+                    }
+                };
+            }
+
+            // ─── COMPLETAR PASO 2 ───
+            btnCompletar.addEventListener('click', function() {
+                if (!validarCompletitud()) {
+                    saveStatus.textContent = '⚠️ Completa todos los campos obligatorios y califica al lead.';
+                    saveStatus.style.color = 'var(--red)';
+                    return;
+                }
+
+                this.disabled = true;
+                this.innerHTML = '<span class="spinner"></span> Procesando...';
+
+                setTimeout(() => {
+                    this.innerHTML = '✅ Completar Paso 2';
+                    this.disabled = false;
+
+                    // Mostrar modal
+                    modal.classList.add('visible');
+
+                    // En producción: POST a /api/solicitud-cotizacion/completar
+                    const datos = recolectarDatos();
+                    console.log('📦 Paso 2 completado:', datos);
+
+                    saveStatus.textContent = '✅ Paso 2 completado a las ' + new Date().toLocaleTimeString();
+                    saveStatus.style.color = 'var(--green)';
+
+                }, 1000);
+            });
+
+            // ─── MODAL ───
+            modalCerrar.addEventListener('click', function() {
+                modal.classList.remove('visible');
+            });
+
+            modalVerResumen.addEventListener('click', function() {
+                modal.classList.remove('visible');
+                // Scroll al resumen del prospecto
+                document.querySelector('.card:first-child').scrollIntoView({ behavior: 'smooth' });
+                // Mostrar los datos recolectados en consola
+                console.log('📊 Resumen del lead:', recolectarDatos());
+                alert('📊 Revisa la consola del navegador (F12) para ver el resumen completo del lead.');
+            });
+
+            // Cerrar modal al hacer clic fuera
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('visible');
+                }
+            });
+
+            // ─── BOTÓN VOLVER ───
+            btnVolver.addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que quieres salir? Los datos no guardados se perderán.')) {
+                    window.location.href = '/dashboard';
+                }
+            });
+
+            // ─── TOGGLE CHECKLIST ───
+            const toggleChecklist = document.getElementById('toggleChecklist');
+            const checklistContent = document.getElementById('checklistContent');
+
+            toggleChecklist.addEventListener('click', function() {
+                this.classList.toggle('open');
+                checklistContent.classList.toggle('open');
+            });
+
+            // ─── VALIDACIÓN INICIAL ───
+            validarCompletitud();
+
+            // ─── DETECTAR UBICACIÓN (pasiva) ───
+            // En producción, se captura automáticamente como en el Paso 1
+
+        })();
+    </script>
+
+</body>
+</html>
