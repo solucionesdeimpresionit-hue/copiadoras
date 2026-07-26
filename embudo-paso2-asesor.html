@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Asesor | Cotización detallada</title>
+
+    <style>
+        :root {
+            --navy: #182632;
+            --blue: #087f8c;
+            --paper: #f4f6f7;
+            --white: #ffffff;
+            --line: #dce3e7;
+            --muted: #62727d;
+            --red: #a83232;
+            --green: #287a42;
+            --amber: #9a671e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+            background: var(--paper);
+            color: #17212b;
+            padding: 24px;
+        }
+
+        .wrap {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--navy);
+            color: var(--white);
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #c8d3da;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card.full {
+            grid-column: 1 / -1;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 18px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            min-height: 44px;
+            padding: 10px 12px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .alert-info {
+            background: #eaf5f7;
+            color: #185b63;
+        }
+
+        .alert-warning {
+            background: #fff5df;
+            color: var(--amber);
+        }
+
+        .alert-danger {
+            background: #fff0f0;
+            color: var(--red);
+        }
+
+        .alert-success {
+            background: #edf8f0;
+            color: var(--green);
+        }
+
+        .temperature-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .temperature-option {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .temperature-option.selected {
+            border-color: var(--blue);
+            background: #eaf5f7;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        button {
+            min-height: 46px;
+            border: 0;
+            border-radius: 8px;
+            padding: 0 18px;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .primary {
+            background: var(--blue);
+            color: var(--white);
+        }
+
+        .secondary {
+            background: var(--white);
+            border: 1px solid var(--line);
+        }
+
+        .success {
+            background: var(--green);
+            color: var(--white);
+        }
+
+        .status {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 780px) {
+            .grid,
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .card.full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+    <header class="header">
+        <h1>Paso 2 · Cotización detallada</h1>
+
+        <p>
+            Vista de trabajo para Ventas / Asesor Técnico.
+            La propuesta formal se prepara después de la validación
+            correspondiente.
+        </p>
+    </header>
+
+    <form id="asesorForm">
+
+        <div class="grid">
+
+            <section class="card">
+                <h2>Datos del prospecto</h2>
+
+                <div class="field">
+                    <label for="prospectoNombre">
+                        Nombre
+                    </label>
+
+                    <input
+                        id="prospectoNombre"
+                        type="text"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="prospectoEmpresa">
+                        Organización
+                    </label>
+
+                    <input
+                        id="prospectoEmpresa"
+                        type="text"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="prospectoEmail">
+                        Correo
+                    </label>
+
+                    <input
+                        id="prospectoEmail"
+                        type="email"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="prospectoTelefono">
+                        Teléfono
+                    </label>
+
+                    <input
+                        id="prospectoTelefono"
+                        type="tel"
+                    >
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Volumen</h2>
+
+                <div class="row">
+
+                    <div class="field">
+                        <label for="vTotal">
+                            Total mensual
+                        </label>
+
+                        <input
+                            id="vTotal"
+                            type="number"
+                            min="0"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="vConfiabilidad">
+                            Confiabilidad del dato
+                        </label>
+
+                        <select id="vConfiabilidad">
+                            <option value="">
+                                Selecciona
+                            </option>
+
+                            <option value="registrado_en_contador">
+                                Registrado en contador
+                            </option>
+
+                            <option value="estimado_aproximado">
+                                Estimado aproximado
+                            </option>
+
+                            <option value="desconocido">
+                                Desconocido
+                            </option>
+
+                            <option value="calculo_proveedor_anterior">
+                                Cálculo de proveedor anterior
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="field">
+                        <label for="vBn">
+                            B/N mensual
+                        </label>
+
+                        <input
+                            id="vBn"
+                            type="number"
+                            min="0"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="vColor">
+                            Color mensual
+                        </label>
+
+                        <input
+                            id="vColor"
+                            type="number"
+                            min="0"
+                        >
+                    </div>
+
+                </div>
+
+                <div
+                    id="validacionColor"
+                    class="alert alert-danger"
+                    style="display:none"
+                ></div>
+            </section>
+
+            <section class="card">
+                <h2>Persona autorizada</h2>
+
+                <div class="field">
+                    <label for="paNombre">
+                        Nombre *
+                    </label>
+
+                    <input
+                        id="paNombre"
+                        type="text"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="paPuesto">
+                        Puesto *
+                    </label>
+
+                    <input
+                        id="paPuesto"
+                        type="text"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="paCelular">
+                        Celular *
+                    </label>
+
+                    <input
+                        id="paCelular"
+                        type="tel"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="paEmail">
+                        Correo
+                    </label>
+
+                    <input
+                        id="paEmail"
+                        type="email"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="paCoincide">
+                        ¿Coincide con registro previo?
+                    </label>
+
+                    <select id="paCoincide">
+                        <option value="">
+                            Selecciona
+                        </option>
+
+                        <option value="si">
+                            Sí
+                        </option>
+
+                        <option value="no">
+                            No
+                        </option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="paNotas">
+                        Notas
+                    </label>
+
+                    <textarea id="paNotas"></textarea>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Situación comercial</h2>
+
+                <div class="field">
+                    <label for="eFrecuenciaFallas">
+                        Frecuencia de fallas *
+                    </label>
+
+                    <select id="eFrecuenciaFallas">
+                        <option value="">Selecciona</option>
+                        <option value="diario">Diario</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="varias">Varias veces al mes</option>
+                        <option value="mensual">Mensual</option>
+                        <option value="nunca">Nunca</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="dPresupuesto">
+                        Presupuesto definido *
+                    </label>
+
+                    <select id="dPresupuesto">
+                        <option value="">Selecciona</option>
+                        <option value="si">Sí</option>
+                        <option value="en_definicion">En definición</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="dPlazo">
+                        ¿Cuándo necesitan decidir? *
+                    </label>
+
+                    <select id="dPlazo">
+                        <option value="">Selecciona</option>
+                        <option value="semana">Esta semana</option>
+                        <option value="15_dias">En 15 días</option>
+                        <option value="1_mes">En 1 mes</option>
+                        <option value="3_meses">En 3 meses o más</option>
+                        <option value="solo_cotizando">
+                            Solo cotizando
+                        </option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="eToner">
+                        Tipo de tóner actual *
+                    </label>
+
+                    <select id="eToner">
+                        <option value="">Selecciona</option>
+                        <option value="original">Original</option>
+                        <option value="mixto">Mixto</option>
+                        <option value="generico">Genérico</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="card full">
+                <h2>Calificación del lead</h2>
+
+                <div
+                    id="sugerenciaAutomatica"
+                    class="alert alert-info"
+                >
+                    Completa los datos comerciales para obtener
+                    una sugerencia automática.
+                </div>
+
+                <div
+                    id="motivoAjusteManual"
+                    class="alert alert-warning"
+                    style="display:none"
+                >
+                    <label for="motivoAjuste">
+                        Motivo obligatorio del ajuste manual
+                    </label>
+
+                    <textarea
+                        id="motivoAjuste"
+                        placeholder="Explica por qué la temperatura seleccionada difiere de la sugerencia."
+                    ></textarea>
+                </div>
+
+                <div class="temperature-options">
+
+                    <div
+                        class="temperature-option"
+                        data-temperature="caliente"
+                    >
+                        🔥 Caliente
+                    </div>
+
+                    <div
+                        class="temperature-option"
+                        data-temperature="tibio"
+                    >
+                        🌤️ Tibio
+                    </div>
+
+                    <div
+                        class="temperature-option"
+                        data-temperature="frio"
+                    >
+                        ❄️ Frío
+                    </div>
+
+                </div>
+
+                <div
+                    id="temperaturaSeleccionada"
+                    class="alert alert-info"
+                    style="display:none"
+                ></div>
+            </section>
+
+            <section class="card full">
+                <h2>Próxima acción</h2>
+
+                <div class="row">
+
+                    <div class="field">
+                        <label for="proximaAccion">
+                            Acción sugerida
+                        </label>
+
+                        <input
+                            id="proximaAccion"
+                            type="text"
+                            readonly
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="fechaProxima">
+                            Fecha sugerida
+                        </label>
+
+                        <input
+                            id="fechaProxima"
+                            type="date"
+                        >
+                    </div>
+
+                </div>
+
+                <div class="field">
+                    <label for="observaciones">
+                        Observaciones
+                    </label>
+
+                    <textarea
+                        id="observaciones"
+                    ></textarea>
+                </div>
+            </section>
+
+            <section class="card full">
+
+                <div class="actions">
+
+                    <button
+                        class="primary"
+                        type="button"
+                        id="btnGuardar"
+                    >
+                        Guardar progreso
+                    </button>
+
+                    <button
+                        class="success"
+                        type="button"
+                        id="btnCompletar"
+                    >
+                        Completar Paso 2
+                    </button>
+
+                    <button
+                        class="secondary"
+                        type="button"
+                        onclick="history.back()"
+                    >
+                        Volver
+                    </button>
+
+                </div>
+
+                <div
+                    id="status"
+                    class="status"
+                >
+                    Listo para capturar información.
+                </div>
+
+            </section>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script src="/js/catalogo.js"></script>
+
+<script>
+(function () {
+    'use strict';
+
+    const catalogo =
+        window.SistemasDocumentalesCatalogo;
+
+    const sugerencia =
+        document.getElementById(
+            'sugerenciaAutomatica'
+        );
+
+    const motivoBox =
+        document.getElementById(
+            'motivoAjusteManual'
+        );
+
+    const motivo =
+        document.getElementById(
+            'motivoAjuste'
+        );
+
+    const temperaturaBox =
+        document.getElementById(
+            'temperaturaSeleccionada'
+        );
+
+    const fecha =
+        document.getElementById(
+            'fechaProxima'
+        );
+
+    const accion =
+        document.getElementById(
+            'proximaAccion'
+        );
+
+    const status =
+        document.getElementById(
+            'status'
+        );
+
+    const options =
+        document.querySelectorAll(
+            '.temperature-option'
+        );
+
+    let temperaturaSugerida = null;
+    let temperaturaSeleccionada = null;
+    let ajusteManual = false;
+
+    function obtenerDatosCalificacion() {
+        return {
+            volumen:
+                document.getElementById(
+                    'vConfiabilidad'
+                ).value,
+
+            frecuencia_fallas:
+                document.getElementById(
+                    'eFrecuenciaFallas'
+                ).value,
+
+            plazo_decision:
+                document.getElementById(
+                    'dPlazo'
+                ).value,
+
+            presupuesto:
+                document.getElementById(
+                    'dPresupuesto'
+                ).value,
+
+            toner:
+                document.getElementById(
+                    'eToner'
+                ).value
+        };
+    }
+
+    function actualizarSugerencia() {
+        const resultado =
+            catalogo.calcularTemperaturaAutomatica(
+                obtenerDatosCalificacion()
+            );
+
+        temperaturaSugerida =
+            resultado.temperatura;
+
+        sugerencia.innerHTML =
+            `<strong>Sugerencia automática:</strong> ` +
+            `${resultado.temperatura.toUpperCase()} ` +
+            `· Puntaje ${resultado.puntaje}. ` +
+            `La selección manual puede modificarla, ` +
+            `pero requiere motivo.`;
+
+        if (!temperaturaSeleccionada) {
+            seleccionarTemperatura(
+                temperaturaSugerida,
+                false
+            );
+        }
+    }
+
+    function seleccionarTemperatura(
+        temperatura,
+        manual
+    ) {
+        temperaturaSeleccionada =
+            temperatura;
+
+        ajusteManual =
+            manual &&
+            temperatura !== temperaturaSugerida;
+
+        options.forEach(option => {
+            option.classList.toggle(
+                'selected',
+                option.dataset.temperature ===
+                temperatura
+            );
+        });
+
+        if (ajusteManual) {
+            motivoBox.style.display =
+                'block';
+        } else {
+            motivoBox.style.display =
+                'none';
+
+            motivo.value = '';
+        }
+
+        const fechaCalculada =
+            catalogo.calcularFechaProxima(
+                temperatura
+            );
+
+        const configuracion =
+            catalogo.UMBRALES_TEMPERATURA[
+                temperatura
+            ];
+
+        if (fechaCalculada) {
+            fecha.value =
+                fechaCalculada
+                    .toISOString()
+                    .split('T')[0];
+        }
+
+        accion.value =
+            configuracion
+                ? configuracion.accion_sugerida
+                : '';
+
+        temperaturaBox.style.display =
+            'block';
+
+        temperaturaBox.textContent =
+            `Temperatura seleccionada: ` +
+            `${temperatura}. ` +
+            `${configuracion.descripcion}.`;
+    }
+
+    function validarVolumenColor() {
+        const resultado =
+            catalogo.validarVolumenColor(
+                document.getElementById(
+                    'vTotal'
+                ).value,
+
+                document.getElementById(
+                    'vBn'
+                ).value,
+
+                document.getElementById(
+                    'vColor'
+                ).value
+            );
+
+        const box =
+            document.getElementById(
+                'validacionColor'
+            );
+
+        if (!resultado.valido) {
+            box.textContent =
+                resultado.mensaje;
+
+            box.style.display =
+                'block';
+        } else {
+            box.textContent = '';
+
+            box.style.display =
+                'none';
+        }
+
+        return resultado.valido;
+    }
+
+    function validarPersonaAutorizada() {
+        const resultado =
+            catalogo.obtenerPersonaAutorizada({
+                nombre:
+                    document.getElementById(
+                        'paNombre'
+                    ).value,
+
+                puesto:
+                    document.getElementById(
+                        'paPuesto'
+                    ).value,
+
+                celular:
+                    document.getElementById(
+                        'paCelular'
+                    ).value,
+
+                email:
+                    document.getElementById(
+                        'paEmail'
+                    ).value,
+
+                coincide_con_registro_previo:
+                    document.getElementById(
+                        'paCoincide'
+                    ).value === 'si',
+
+                notas:
+                    document.getElementById(
+                        'paNotas'
+                    ).value
+            });
+
+        return resultado;
+    }
+
+    function validarFormulario() {
+        if (!validarVolumenColor()) {
+            return false;
+        }
+
+        const persona =
+            validarPersonaAutorizada();
+
+        if (!persona.valido) {
+            status.textContent =
+                persona.error;
+
+            return false;
+        }
+
+        if (!temperaturaSeleccionada) {
+            status.textContent =
+                'Selecciona una temperatura.';
+
+            return false;
+        }
+
+        if (
+            ajusteManual &&
+            !motivo.value.trim()
+        ) {
+            status.textContent =
+                'El motivo del ajuste manual es obligatorio.';
+
+            motivo.focus();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    options.forEach(option => {
+        option.addEventListener(
+            'click',
+            function () {
+                seleccionarTemperatura(
+                    this.dataset.temperature,
+                    true
+                );
+            }
+        );
+    });
+
+    [
+        'vConfiabilidad',
+        'eFrecuenciaFallas',
+        'dPlazo',
+        'dPresupuesto',
+        'eToner'
+    ].forEach(id => {
+        document
+            .getElementById(id)
+            .addEventListener(
+                'change',
+                actualizarSugerencia
+            );
+    });
+
+    [
+        'vTotal',
+        'vBn',
+        'vColor'
+    ].forEach(id => {
+        document
+            .getElementById(id)
+            .addEventListener(
+                'input',
+                validarVolumenColor
+            );
+    });
+
+    document
+        .getElementById('btnGuardar')
+        .addEventListener(
+            'click',
+            function () {
+                if (!validarFormulario()) {
+                    return;
+                }
+
+                status.textContent =
+                    'Progreso preparado para guardarse. ' +
+                    'La persistencia real requiere backend.';
+            }
+        );
+
+    document
+        .getElementById('btnCompletar')
+        .addEventListener(
+            'click',
+            function () {
+                if (!validarFormulario()) {
+                    return;
+                }
+
+                status.textContent =
+                    'Paso 2 validado correctamente. ' +
+                    'Próximo paso: visita de campo y propuesta formal.';
+            }
+        );
+
+    actualizarSugerencia();
+    validarVolumenColor();
+
+})();
+</script>
+
+</body>
+</html>
