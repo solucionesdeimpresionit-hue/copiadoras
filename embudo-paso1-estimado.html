@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Estimador de costo por impresión | Sistemas Documentales</title>
+
+    <meta name="description"
+          content="Obtén un rango inicial de costo por impresión basado en tu volumen mensual.">
+
+    <style>
+        :root {
+            --ink: #17212b;
+            --blue: #087f8c;
+            --blue-light: #e8f7f8;
+            --paper: #f5f7f8;
+            --white: #ffffff;
+            --line: #dce3e7;
+            --muted: #62727d;
+            --red: #a83232;
+            --green: #287a42;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            width: min(680px, 100%);
+            margin: 0 auto;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 38px;
+            box-shadow: 0 20px 60px rgba(23, 33, 43, .08);
+        }
+
+        .brand {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--blue);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: clamp(32px, 5vw, 48px);
+            line-height: 1.05;
+            letter-spacing: -.04em;
+            margin-bottom: 16px;
+        }
+
+        .intro {
+            color: var(--muted);
+            font-size: 17px;
+            margin-bottom: 30px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 48px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 0 14px;
+            font: inherit;
+            background: var(--white);
+        }
+
+        input:focus,
+        select:focus {
+            outline: 3px solid var(--blue-light);
+            border-color: var(--blue);
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            min-height: 50px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--blue);
+            color: var(--white);
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        .result {
+            display: none;
+            margin-top: 30px;
+            border-top: 1px solid var(--line);
+            padding-top: 30px;
+        }
+
+        .result.visible {
+            display: block;
+        }
+
+        .result-card {
+            background: var(--blue-light);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .result-label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            font-size: 30px;
+            font-weight: 850;
+            margin-bottom: 18px;
+        }
+
+        .result-row {
+            padding: 13px 0;
+            border-top: 1px solid rgba(8, 127, 140, .18);
+        }
+
+        .result-row strong {
+            display: block;
+        }
+
+        .result-row span {
+            color: var(--muted);
+        }
+
+        .notice {
+            margin-top: 16px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fff7e8;
+            color: #76501f;
+            font-size: 14px;
+        }
+
+        .notice-danger {
+            background: #fff0f0;
+            color: var(--red);
+        }
+
+        .error {
+            display: none;
+            margin-top: 14px;
+            padding: 12px;
+            background: #fff0f0;
+            color: var(--red);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .error.visible {
+            display: block;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .actions a {
+            display: inline-flex;
+            min-height: 44px;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .footer {
+            margin-top: 26px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 520px) {
+            .container {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="container">
+
+    <div class="brand">
+        Sistemas Documentales
+    </div>
+
+    <h1>
+        Obtén un estimado inicial de tu costo de impresión.
+    </h1>
+
+    <p class="intro">
+        Indica tu volumen mensual aproximado. Te mostraremos un rango
+        orientativo. El resultado no es una cotización formal ni muestra
+        un desglose de costos internos.
+    </p>
+
+    <form id="estimadoForm">
+
+        <div class="field">
+            <label for="nombre">
+                Nombre
+            </label>
+
+            <input
+                id="nombre"
+                name="nombre"
+                type="text"
+                autocomplete="name"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="empresa">
+                Organización
+            </label>
+
+            <input
+                id="empresa"
+                name="empresa"
+                type="text"
+                autocomplete="organization"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="email">
+                Correo electrónico
+            </label>
+
+            <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="telefono">
+                Teléfono
+            </label>
+
+            <input
+                id="telefono"
+                name="telefono"
+                type="tel"
+                autocomplete="tel"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="volumen">
+                Volumen mensual aproximado
+            </label>
+
+            <input
+                id="volumen"
+                name="volumen"
+                type="number"
+                min="1"
+                step="1"
+                required
+            >
+
+            <div class="hint">
+                Si no tienes el dato exacto, proporciona una aproximación.
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="tipoInteres">
+                ¿Qué estás buscando?
+            </label>
+
+            <select id="tipoInteres" name="tipoInteres" required>
+                <option value="">
+                    Selecciona una opción
+                </option>
+
+                <option value="renta">
+                    Renta de equipo
+                </option>
+
+                <option value="venta">
+                    Compra de equipo
+                </option>
+
+                <option value="prepago_escolar">
+                    Servicio prepago anual para escuela
+                </option>
+
+                <option value="servicio">
+                    Servicio técnico
+                </option>
+            </select>
+        </div>
+
+        <button
+            class="btn"
+            id="btnCalcular"
+            type="submit"
+        >
+            Calcular mi estimado
+        </button>
+
+        <div
+            class="error"
+            id="errorMsg"
+            role="alert"
+        ></div>
+
+    </form>
+
+    <section
+        class="result"
+        id="resultContainer"
+        aria-live="polite"
+    >
+
+        <div class="result-card">
+
+            <div class="result-label">
+                Rango estimado de CPI
+            </div>
+
+            <div
+                class="result-value"
+                id="cpiRango"
+            ></div>
+
+            <div class="result-row">
+                <strong>
+                    Rango mensual orientativo
+                </strong>
+
+                <span id="costoMensual"></span>
+            </div>
+
+            <div class="result-row">
+                <strong>
+                    Modelo de referencia
+                </strong>
+
+                <span id="modeloSugerido"></span>
+            </div>
+
+        </div>
+
+        <div
+            class="notice"
+            id="notaResultado"
+        ></div>
+
+        <div class="actions">
+            <a href="/">
+                Volver al sitio
+            </a>
+
+            <a href="mailto:ventas@solucionesimpresion.mx">
+                Contactar a un asesor
+            </a>
+        </div>
+
+    </section>
+
+    <div class="footer">
+        <a href="/aviso-privacidad/">
+            Aviso de privacidad
+        </a>
+    </div>
+
+</main>
+
+<script src="/js/catalogo.js"></script>
+
+<script>
+(function () {
+    'use strict';
+
+    const form =
+        document.getElementById('estimadoForm');
+
+    const btn =
+        document.getElementById('btnCalcular');
+
+    const errorMsg =
+        document.getElementById('errorMsg');
+
+    const resultContainer =
+        document.getElementById('resultContainer');
+
+    const cpiRango =
+        document.getElementById('cpiRango');
+
+    const costoMensual =
+        document.getElementById('costoMensual');
+
+    const modeloSugerido =
+        document.getElementById('modeloSugerido');
+
+    const notaResultado =
+        document.getElementById('notaResultado');
+
+    const catalogo =
+        window.SistemasDocumentalesCatalogo;
+
+    function moneda(valor) {
+        return new Intl.NumberFormat(
+            'es-MX',
+            {
+                style: 'currency',
+                currency: 'MXN',
+                maximumFractionDigits: 2
+            }
+        ).format(valor);
+    }
+
+    function enviarUbicacionPasiva() {
+        /*
+         * La ubicación se captura de forma pasiva.
+         * No se solicita al visitante mediante un campo adicional.
+         *
+         * La integración real de IP/geolocalización debe realizarse
+         * posteriormente en backend.
+         */
+    }
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        errorMsg.classList.remove('visible');
+
+        const volumen =
+            Number(
+                document.getElementById('volumen').value
+            );
+
+        if (
+            !Number.isFinite(volumen) ||
+            volumen <= 0
+        ) {
+            errorMsg.textContent =
+                'Ingresa un volumen mensual válido.';
+
+            errorMsg.classList.add('visible');
+
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Calculando...';
+
+        const resultado =
+            catalogo.calcularEstimado(volumen);
+
+        if (resultado.requiereAsesor) {
+            cpiRango.textContent =
+                'Requiere evaluación personalizada';
+
+            costoMensual.textContent =
+                'Sin estimado automático';
+
+            modeloSugerido.textContent =
+                'Por definir con asesor técnico';
+
+            notaResultado.textContent =
+                resultado.nota;
+
+            notaResultado.classList.add(
+                'notice-danger'
+            );
+        } else {
+            cpiRango.textContent =
+                `${moneda(resultado.cpiRango.min)} – ` +
+                `${moneda(resultado.cpiRango.max)}`;
+
+            costoMensual.textContent =
+                `${moneda(resultado.costoMensual.min)} – ` +
+                `${moneda(resultado.costoMensual.max)} / mes`;
+
+            modeloSugerido.textContent =
+                `${resultado.modelo.marca} ` +
+                `${resultado.modelo.nombre} · ` +
+                `${resultado.modelo.volumen_optimo_1x.toLocaleString()} ` +
+                `imp/mes (1X)`;
+
+            notaResultado.textContent =
+                resultado.nota;
+
+            notaResultado.classList.remove(
+                'notice-danger'
+            );
+        }
+
+        resultContainer.classList.add('visible');
+
+        resultContainer.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+
+        enviarUbicacionPasiva();
+
+        btn.disabled = false;
+        btn.textContent = 'Calcular mi estimado';
+    });
+
+})();
+</script>
+
+</body>
+</html>
