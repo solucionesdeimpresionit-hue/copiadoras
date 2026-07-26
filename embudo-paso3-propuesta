@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Asesor | Propuesta formal</title>
+
+    <style>
+        :root {
+            --navy: #182632;
+            --blue: #087f8c;
+            --paper: #f4f6f7;
+            --white: #ffffff;
+            --line: #dce3e7;
+            --muted: #62727d;
+            --green: #287a42;
+            --amber: #9a671e;
+            --red: #a83232;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+            background: var(--paper);
+            color: #17212b;
+            padding: 24px;
+        }
+
+        .wrap {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--navy);
+            color: var(--white);
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            color: #c8d3da;
+            margin-top: 8px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-bottom: 6px;
+        }
+
+        .card-sub {
+            color: var(--muted);
+            font-size: 13.5px;
+            margin-bottom: 18px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        label .required {
+            color: var(--red);
+            margin-left: 2px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .field-hint {
+            font-size: 12.5px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        /* ── Bloque de CPI real: deliberadamente distinto visualmente
+           del catálogo público, para que nadie lo confunda con un
+           dato calculado automáticamente. ── */
+        .cpi-manual {
+            border: 2px solid var(--blue);
+            border-radius: 12px;
+            padding: 20px;
+            background: #eaf5f7;
+        }
+        .cpi-manual .field {
+            margin-bottom: 10px;
+        }
+        .cpi-manual input {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--navy);
+            background: var(--white);
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        .alert-info    { background: #eaf5f7; color: #185b63; }
+        .alert-warning { background: #fff5df; color: var(--amber); }
+        .alert-danger  { background: #fff0f0; color: var(--red); }
+        .alert-success { background: #edf8f0; color: var(--green); }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        .checklist-item input {
+            width: 18px;
+            height: 18px;
+            min-height: 0;
+            accent-color: var(--blue);
+        }
+
+        .preview {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 24px;
+            background: #fbfcfc;
+        }
+
+        .preview-section {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .preview-section:last-child {
+            border-bottom: none;
+        }
+
+        .preview-label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .preview-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .highlight {
+            color: var(--blue);
+        }
+
+        .preview-value .source-tag {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            padding: 2px 9px;
+            border-radius: 100px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .source-tag.manual {
+            background: rgba(8, 127, 140, .14);
+            color: var(--blue);
+        }
+        .source-tag.catalogo {
+            background: rgba(154, 103, 30, .16);
+            color: var(--amber);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        button {
+            min-height: 46px;
+            border: 0;
+            border-radius: 8px;
+            padding: 0 18px;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .primary   { background: var(--blue); color: var(--white); }
+        .secondary { background: var(--white); border: 1px solid var(--line); }
+        .success   { background: var(--green); color: var(--white); }
+        .success:disabled { opacity: .5; cursor: not-allowed; }
+
+        .status {
+            margin-top: 14px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 700px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+    <header class="header">
+        <h1>Paso 3 · Propuesta formal</h1>
+
+        <p>
+            Vista interna para preparar la propuesta después de la visita de
+            diagnóstico en campo. El CPI real se captura a mano — no se
+            calcula en esta página ni se reutiliza el rango público del
+            estimador.
+        </p>
+    </header>
+
+    <section class="card">
+
+        <h2>Datos de la propuesta</h2>
+        <p class="card-sub">Identificación del cliente y del equipo recomendado.</p>
+
+        <div class="row">
+
+            <div class="field">
+                <label for="cliente">Cliente / organización</label>
+
+                <input
+                    id="cliente"
+                    type="text"
+                    value="Cliente por confirmar"
+                >
+            </div>
+
+            <div class="field">
+                <label for="modelo">Modelo recomendado</label>
+
+                <select id="modelo"></select>
+
+                <div class="field-hint">
+                    El catálogo aquí solo sirve para identificar el equipo —
+                    su <code>cpi_rango</code> es la referencia pública del
+                    Paso 1 y no se usa para calcular el precio de esta propuesta.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="field">
+                <label for="volumen">Volumen mensual validado en campo</label>
+
+                <input
+                    id="volumen"
+                    type="number"
+                    min="1"
+                    value="12000"
+                >
+                <div class="field-hint">Debe venir de la visita de diagnóstico, no del estimado inicial del prospecto.</div>
+            </div>
+
+            <div class="field">
+                <label for="modalidad">Modalidad</label>
+
+                <select id="modalidad">
+                    <option value="renta">Renta</option>
+                    <option value="venta">Venta</option>
+                    <option value="escuela_prepago">Prepago anual · Escuela</option>
+                </select>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ─── CPI REAL: CAMPO MANUAL, NUNCA AUTOMÁTICO ─── -->
+    <section class="card">
+
+        <h2>Costo por impresión (CPI) real</h2>
+        <p class="card-sub">
+            Valor puntual calculado por el asesor con datos reales de la
+            visita: contador validado, estado de refacciones y condiciones
+            de instalación. No es un cálculo del navegador.
+        </p>
+
+        <div class="cpi-manual">
+            <div class="field">
+                <label for="cpiReal">
+                    CPI real (MXN por impresión) <span class="required">*</span>
+                </label>
+
+                <input
+                    id="cpiReal"
+                    type="number"
+                    min="0.0001"
+                    step="0.0001"
+                    placeholder="Ej. 0.2980"
+                >
+            </div>
+
+            <div class="field-hint">
+                Este número lo defines tú con la fórmula completa
+                (amortización + tóner real + refacciones + servicio),
+                no el rango público que vio el prospecto en el estimado web.
+                Si el resultado se aleja mucho del rango público
+                (<span id="rangoPublicoRef">—</span>), revisa que no estés
+                usando el dato de brochure en vez del rendimiento real de campo.
+            </div>
+
+            <div
+                id="alertaDesviacion"
+                class="alert alert-warning"
+                style="display:none;"
+            ></div>
+        </div>
+
+    </section>
+
+    <section class="card">
+
+        <h2>Qué incluye la propuesta</h2>
+        <p class="card-sub">Modelo "todo incluido" — desmarca solo si algo queda fuera explícitamente.</p>
+
+        <div class="checklist">
+            <label class="checklist-item">
+                <input type="checkbox" id="incEquipo" checked> Equipo
+            </label>
+            <label class="checklist-item">
+                <input type="checkbox" id="incToner" checked> Tóner
+            </label>
+            <label class="checklist-item">
+                <input type="checkbox" id="incRefacciones" checked> Refacciones
+            </label>
+            <label class="checklist-item">
+                <input type="checkbox" id="incServicio" checked> Servicio técnico
+            </label>
+            <label class="checklist-item">
+                <input type="checkbox" id="incMantenimiento" checked> Mantenimiento preventivo
+            </label>
+        </div>
+    </section>
+
+    <section class="card">
+
+        <h2>Visita y entrega</h2>
+        <p class="card-sub">La propuesta debe entregarse entre 24 y 48 horas después de la visita.</p>
+
+        <div class="row">
+            <div class="field">
+                <label for="fechaVisita">Fecha y hora de la visita <span class="required">*</span></label>
+                <input id="fechaVisita" type="datetime-local">
+            </div>
+            <div class="field">
+                <label for="fechaEntrega">Fecha y hora de entrega planeada <span class="required">*</span></label>
+                <input id="fechaEntrega" type="datetime-local">
+            </div>
+        </div>
+
+        <div id="alertaVentanaEntrega" class="alert alert-warning" style="display:none;"></div>
+    </section>
+
+    <section class="card">
+
+        <h2>Vista previa</h2>
+
+        <div class="preview">
+
+            <div class="preview-section">
+                <div class="preview-label">Cliente</div>
+                <div class="preview-value" id="previewCliente"></div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-label">Equipo recomendado</div>
+                <div class="preview-value" id="previewEquipo"></div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-label">CPI real de la propuesta</div>
+                <div class="preview-value highlight" id="previewCpi">
+                    — <span class="source-tag manual">Manual · asesor</span>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-label">Costo mensual (volumen validado × CPI real)</div>
+                <div class="preview-value" id="previewCostoMensual"></div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-label">Modalidad</div>
+                <div class="preview-value" id="previewModalidad"></div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-label">Incluye</div>
+                <div class="preview-value" id="previewIncluye" style="font-size:14px;font-weight:600;"></div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="card">
+
+        <div class="actions">
+            <button class="primary" id="btnActualizar">Actualizar vista previa</button>
+            <button class="success" id="btnGuardar" disabled>Guardar borrador</button>
+            <button class="secondary" onclick="history.back()">Volver</button>
+        </div>
+
+        <div class="status" id="status">
+            Captura el CPI real, la ventana de entrega y actualiza la vista previa.
+        </div>
+
+    </section>
+
+</div>
+
+<script src="/js/catalogo.js"></script>
+
+<script>
+(function () {
+    'use strict';
+
+    const catalogo = window.SistemasDocumentalesCatalogo;
+
+    const modeloSelect     = document.getElementById('modelo');
+    const cliente          = document.getElementById('cliente');
+    const volumen          = document.getElementById('volumen');
+    const modalidad        = document.getElementById('modalidad');
+    const cpiReal          = document.getElementById('cpiReal');
+    const rangoPublicoRef  = document.getElementById('rangoPublicoRef');
+    const alertaDesviacion = document.getElementById('alertaDesviacion');
+    const fechaVisita      = document.getElementById('fechaVisita');
+    const fechaEntrega     = document.getElementById('fechaEntrega');
+    const alertaVentana    = document.getElementById('alertaVentanaEntrega');
+
+    const previewCliente      = document.getElementById('previewCliente');
+    const previewEquipo       = document.getElementById('previewEquipo');
+    const previewCpi           = document.getElementById('previewCpi');
+    const previewCostoMensual  = document.getElementById('previewCostoMensual');
+    const previewModalidad    = document.getElementById('previewModalidad');
+    const previewIncluye      = document.getElementById('previewIncluye');
+
+    const status     = document.getElementById('status');
+    const btnGuardar = document.getElementById('btnGuardar');
+
+    function moneda(valor, decimales) {
+        return new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            maximumFractionDigits: decimales === undefined ? 2 : decimales
+        }).format(valor);
+    }
+
+    // Poblar el selector de modelos — solo para IDENTIFICAR el equipo,
+    // nunca para tomar su cpi_rango como precio de esta propuesta.
+    catalogo.CATALOGO_MODELOS.forEach(function (modelo) {
+        const option = document.createElement('option');
+        option.value = modelo.id;
+        option.textContent = modelo.marca + ' ' + modelo.nombre;
+        modeloSelect.appendChild(option);
+    });
+
+    function modeloActual() {
+        return catalogo.CATALOGO_MODELOS.find(function (item) {
+            return item.id === modeloSelect.value;
+        });
+    }
+
+    // Mostrar el rango público SOLO como referencia de sanity-check para
+    // el asesor — nunca se usa como valor de la propuesta.
+    function actualizarReferenciaPublica() {
+        const modelo = modeloActual();
+        if (!modelo) {
+            rangoPublicoRef.textContent = '—';
+            return;
+        }
+        rangoPublicoRef.textContent =
+            moneda(modelo.cpi_rango.min, 2) + ' – ' + moneda(modelo.cpi_rango.max, 2);
+    }
+
+    function validarCpiVsRangoPublico() {
+        const modelo = modeloActual();
+        const valor = Number(cpiReal.value);
+
+        if (!modelo || !valor || valor <= 0) {
+            alertaDesviacion.style.display = 'none';
+            return;
+        }
+
+        const min = modelo.cpi_rango.min;
+        const max = modelo.cpi_rango.max;
+        const margen = (max - min) * 0.6; // margen de tolerancia antes de advertir
+        const fueraDeRango = valor < (min - margen) || valor > (max + margen);
+
+        if (fueraDeRango) {
+            alertaDesviacion.style.display = 'block';
+            alertaDesviacion.textContent =
+                'El CPI real (' + moneda(valor, 4) + ') se aleja bastante del rango ' +
+                'público de referencia (' + moneda(min, 2) + ' – ' + moneda(max, 2) + '). ' +
+                'Esto puede ser correcto si el equipo tiene condiciones particulares — ' +
+                'solo confirma que no es un error de captura.';
+        } else {
+            alertaDesviacion.style.display = 'none';
+        }
+    }
+
+    function validarVentanaEntrega() {
+        alertaVentana.style.display = 'none';
+
+        if (!fechaVisita.value || !fechaEntrega.value) {
+            return false;
+        }
+
+        const visita = new Date(fechaVisita.value);
+        const entrega = new Date(fechaEntrega.value);
+        const horas = (entrega - visita) / (1000 * 60 * 60);
+
+        if (horas < 0) {
+            alertaVentana.className = 'alert alert-danger';
+            alertaVentana.style.display = 'block';
+            alertaVentana.textContent =
+                'La fecha de entrega no puede ser anterior a la fecha de la visita.';
+            return false;
+        }
+
+        if (horas < 24 || horas > 48) {
+            alertaVentana.className = 'alert alert-warning';
+            alertaVentana.style.display = 'block';
+            alertaVentana.textContent =
+                'La propuesta debe entregarse entre 24 y 48 horas después de la visita ' +
+                '(ventana actual: ' + Math.round(horas) + ' horas). Ajusta la fecha o documenta ' +
+                'la excepción con Coordinadora.';
+            return false;
+        }
+
+        return true;
+    }
+
+    function formularioCompleto() {
+        const modelo = modeloActual();
+        const cpiValido = Number(cpiReal.value) > 0;
+        const volumenValido = Number(volumen.value) > 0;
+        const ventanaValida = validarVentanaEntrega();
+
+        return Boolean(modelo) && cpiValido && volumenValido && ventanaValida;
+    }
+
+    function actualizar() {
+        const modelo = modeloActual();
+        if (!modelo) { return; }
+
+        actualizarReferenciaPublica();
+        validarCpiVsRangoPublico();
+        validarVentanaEntrega();
+
+        previewCliente.textContent = cliente.value || 'Cliente por confirmar';
+
+        const volumenNumero = Number(volumen.value) || 0;
+        previewEquipo.textContent =
+            modelo.marca + ' ' + modelo.nombre + ' · ' +
+            volumenNumero.toLocaleString('es-MX') + ' imp/mes (validado en campo)';
+
+        const cpiValor = Number(cpiReal.value);
+        if (cpiValor > 0) {
+            previewCpi.innerHTML =
+                moneda(cpiValor, 4) + ' MXN <span class="source-tag manual">Manual · asesor</span>';
+            previewCostoMensual.textContent = moneda(cpiValor * volumenNumero, 2) + ' / mes';
+        } else {
+            previewCpi.innerHTML =
+                'Pendiente de captura <span class="source-tag catalogo">Sin CPI real aún</span>';
+            previewCostoMensual.textContent = '—';
+        }
+
+        previewModalidad.textContent =
+            modalidad.options[modalidad.selectedIndex].textContent.trim();
+
+        const incluye = [];
+        if (document.getElementById('incEquipo').checked) incluye.push('Equipo');
+        if (document.getElementById('incToner').checked) incluye.push('Tóner');
+        if (document.getElementById('incRefacciones').checked) incluye.push('Refacciones');
+        if (document.getElementById('incServicio').checked) incluye.push('Servicio técnico');
+        if (document.getElementById('incMantenimiento').checked) incluye.push('Mantenimiento preventivo');
+        previewIncluye.textContent = incluye.length ? incluye.join(' · ') : 'Sin elementos seleccionados';
+
+        const completo = formularioCompleto();
+        btnGuardar.disabled = !completo;
+
+        status.textContent = completo
+            ? 'Vista previa actualizada. Lista para guardar como borrador.'
+            : 'Faltan datos obligatorios: CPI real, volumen, fechas de visita/entrega dentro de la ventana de 24–48h.';
+    }
+
+    document.getElementById('btnActualizar').addEventListener('click', actualizar);
+    modeloSelect.addEventListener('change', actualizar);
+    cpiReal.addEventListener('input', actualizar);
+    volumen.addEventListener('input', actualizar);
+    fechaVisita.addEventListener('change', actualizar);
+    fechaEntrega.addEventListener('change', actualizar);
+    modalidad.addEventListener('change', actualizar);
+    document.querySelectorAll('.checklist-item input').forEach(function (el) {
+        el.addEventListener('change', actualizar);
+    });
+
+    btnGuardar.addEventListener('click', function () {
+        if (!formularioCompleto()) {
+            actualizar();
+            return;
+        }
+        status.textContent =
+            'Borrador preparado (estado: borrador). La persistencia real de PropuestaFormal requiere backend.';
+    });
+
+    modeloSelect.value = 'mod-001';
+    actualizar();
+
+})();
+</script>
+
+</body>
+</html>
